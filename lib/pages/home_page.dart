@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:warehouse/components/card_with_badge.dart';
+import 'package:warehouse/components/progress_circular.dart';
 import 'package:warehouse/components/screen_action_bar.dart';
 import 'package:warehouse/components/screen_frame.dart';
-import 'package:warehouse/constants/theme_constant.dart';
 import 'package:warehouse/constants/url_constant.dart';
 import 'package:warehouse/pages/dispatch_page.dart';
 import 'package:warehouse/pages/order_shiped.dart';
+import 'package:warehouse/pages/pack_orders_page.dart';
 import 'package:warehouse/pages/product_list_page.dart';
+import 'package:warehouse/pages/register_order_page.dart';
 import 'package:warehouse/pages/view_bill_page.dart';
 import 'package:warehouse/utils/api_service.dart';
+import 'package:warehouse/utils/common_function.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,6 +23,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   var _summary;
 
+  bool _loading = false;
+
   @override
   void initState() {
     super.initState();
@@ -26,7 +32,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   initSummary() async {
+
+    setState(() {
+      _loading = true;
+    });
     ApiResponse response = await postService(URL_SUMMARY, {});
+    setState(() {
+      _loading = false;
+    });
 
     if (response.isSuccess) {
       setState(() {
@@ -53,78 +66,25 @@ class _HomePageState extends State<HomePage> {
           child: Icon(Icons.view_agenda),
         ),
       ),
-      body: Column(
+      body: !_loading 
+      ? Column(
         children: [
-          InkWell(
-            onTap: () => openProductList(),
-            child: Card(
-              margin: CONTENT_PADDING,
-              child: Padding(
-                padding: CONTENT_PADDING * 3,
-                child: Row(
-                  children: [
-                    Text("Products", style: getTextTheme().headlineMedium),
-                    Spacer(),
-                    if (_summary != null)
-                      Badge(
-                        backgroundColor: COLOR_PRIMARY,
-                        padding: CONTENT_PADDING,
-                        textStyle: getTextTheme().titleMedium,
-                        label: Text('${_summary['product_count']}'),
-                      ),
-                    Icon(Icons.arrow_right),
-                  ],
-                ),
-              ),
-            ),
-          ),
 
-          InkWell(
-            onTap: () => moveToDispatch(),
-            child: Card(
-              margin: CONTENT_PADDING,
-              child: Padding(
-                padding: CONTENT_PADDING * 3,
-                child: Row(
-                  children: [
-                    Text("Incomming", style: getTextTheme().headlineMedium),
-                    Spacer(),
-                    if (_summary != null)
-                      Badge(
-                        backgroundColor: COLOR_PRIMARY,
-                        padding: CONTENT_PADDING,
-                        textStyle: getTextTheme().titleMedium,
-                        label: Text('${_summary['registered_orders']}'),
-                      ),
-                    Icon(Icons.arrow_right),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          InkWell(
-            onTap: () => openShippedOrderList(),
-            child: Card(
-              margin: CONTENT_PADDING,
-              child: Padding(
-                padding: CONTENT_PADDING * 3,
-                child: Row(
-                  children: [
-                    Text("Packed Order", style: getTextTheme().headlineMedium),
-                    Spacer(),
-                    if (_summary != null)
-                      Badge(
-                        backgroundColor: COLOR_PRIMARY,
-                        padding: CONTENT_PADDING,
-                        textStyle: getTextTheme().titleMedium,
-                        label: Text('${_summary['dispatched']}'),
-                      ),
-                    Icon(Icons.arrow_right),
-                  ],
-                ),
-              ),
-            ),
+          CardWithBadge(name: 'Product List', badge: '${_summary['product_count']}', onCardClicked: openProductList,),
+          CardWithBadge(name: 'Registered Orders', badge: '${_summary['registered_orders']}', onCardClicked: openRegisteredOrder,),
+          CardWithBadge(name: 'Packed Orders', badge: '${_summary['paked_orders']}', onCardClicked: openPackOrders,),
+          CardWithBadge(name: 'Outgoing Orders', badge: '${_summary['outgoing_orders']}', onCardClicked: openProductList,),
+          
+        ],
+      )
+      : Column(
+        children: [
+          addVerticalSpace(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ProgressCircular()
+            ],
           ),
         ],
       ),
@@ -139,10 +99,10 @@ class _HomePageState extends State<HomePage> {
     initSummary();
   }
 
-  openShippedOrderList() async {
+  openPackOrders() async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (builder) => OrderShiped()),
+      MaterialPageRoute(builder: (builder) => PackOrdersPage()),
     );
   }
 
@@ -151,5 +111,9 @@ class _HomePageState extends State<HomePage> {
       context,
       MaterialPageRoute(builder: (builder) => ProductListPage()),
     );
+  }
+
+  openRegisteredOrder() async{
+    await Navigator.push(context, MaterialPageRoute(builder: (builder) => RegisterOrderPage()));
   }
 }

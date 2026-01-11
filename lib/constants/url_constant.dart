@@ -4,11 +4,14 @@ const _baseUrl = 'warehouse/';
 
 
 const URL_ADD_PRODUCT = '$_domain${_baseUrl}addProduct';
+const URL_ADD_SKU = '$_domain${_baseUrl}addSku';
 const URL_LOGIN = '$_domain${_baseUrl}login';
 const URL_GET_PRODUCTS = '$_domain${_baseUrl}getProducts';
 
 const URL_SCREEN_RECORD = '$_domain${_baseUrl}screenRecord';
 const URL_ORDER_DETAILS = '$_domain${_baseUrl}orderDetails';
+const URL_GET_REGISTERED_ORDERS = '$_domain${_baseUrl}getRegisteredOrders';
+const URL_GET_PACKED_ORDERS = '$_domain${_baseUrl}getPackedOrders';
 const URL_SUMMARY = '$_domain${_baseUrl}summary';
 const URL_UPDATE_STOCK = '$_domain${_baseUrl}updateStock';
 

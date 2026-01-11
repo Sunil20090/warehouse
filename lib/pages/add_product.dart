@@ -22,6 +22,7 @@ class AddProduct extends StatefulWidget {
 class _AddProductState extends State<AddProduct> {
   TextEditingController _nameController = TextEditingController();
   TextEditingController _skuIdController = TextEditingController();
+  TextEditingController _priceController = TextEditingController();
   File? _imageFile;
 
   @override
@@ -34,6 +35,8 @@ class _AddProductState extends State<AddProduct> {
           FloatingLabelEditBox(labelText: 'Name', controller: _nameController),
           addVerticalSpace(),
           FloatingLabelEditBox(labelText: 'SKU ID', controller: _skuIdController),
+          addVerticalSpace(),
+          FloatingLabelEditBox(labelText: 'Buying price', controller: _priceController, textInputType: TextInputType.number,),
           addVerticalSpace(),
           ChooseImage(
             onFileSelected: (imageFile) {
@@ -70,6 +73,11 @@ class _AddProductState extends State<AddProduct> {
       return;
     }
 
+    if (_priceController.text.trim().isEmpty) {
+      showAlert(context, 'Empty!', 'price is empty');
+      return;
+    }
+
     if (_imageFile == null) {
       showAlert(context, 'Error!', 'Image not attached');
       return;
@@ -79,7 +87,7 @@ class _AddProductState extends State<AddProduct> {
     var body = {
       "user_id": await getUserId(),
       "name": _nameController.text,
-      "sku_id": _skuIdController.text,
+      "sku_name": _skuIdController.text,
       "product_image": base64,
     };
 

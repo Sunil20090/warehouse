@@ -6,11 +6,13 @@ import 'package:warehouse/utils/common_function.dart';
 class ItemOrder extends StatefulWidget {
   final dynamic order;
   bool isDeletable;
+  List<Widget>? children;
   Function(dynamic order)? onDeleteClicked;
   ItemOrder({
     super.key,
     required this.order,
     this.onDeleteClicked,
+    this.children,
     this.isDeletable = true,
   });
 
@@ -33,7 +35,7 @@ class _ItemOrderState extends State<ItemOrder> {
               addVerticalSpace(),
               Badge(
                 padding: CONTENT_PADDING,
-                label: Text('${widget.order['status']}'),
+                label: Text('${widget.order['stage_name']}'),
               ),
             ],
           ),
@@ -42,12 +44,34 @@ class _ItemOrderState extends State<ItemOrder> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+
+              Row(
+                children: [
+                  Text("Name"),
+                  addHorizontalSpace(),
+                  Text(
+                    widget.order['product_name'],
+                    style: getTextTheme().titleSmall,
+                  ),
+                ],
+              ),
+
+              Row(
+                children: [
+                  Text("Customer Name"),
+                  addHorizontalSpace(),
+                  Text(
+                    widget.order['custumer_name'],
+                    style: getTextTheme().titleSmall,
+                  ),
+                ],
+              ),
               Row(
                 children: [
                   Text("Order Id:"),
                   addHorizontalSpace(),
                   Text(
-                    widget.order['order_id'],
+                    widget.order['order_number'],
                     style: getTextTheme().titleSmall,
                   ),
                 ],
@@ -67,7 +91,7 @@ class _ItemOrderState extends State<ItemOrder> {
                   Text("SKU Id"),
                   addHorizontalSpace(),
                   Text(
-                    widget.order['sku_id'],
+                    widget.order['sku_name'],
                     style: getTextTheme().titleSmall,
                   ),
                 ],
@@ -86,6 +110,8 @@ class _ItemOrderState extends State<ItemOrder> {
                   ),
                 ],
               ),
+              if(widget.children != null)
+              ...widget.children!
             ],
           ),
 

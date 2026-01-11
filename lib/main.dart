@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:warehouse/pages/home_page.dart';
 import 'package:warehouse/pages/splash_page.dart';
 
 void main() {

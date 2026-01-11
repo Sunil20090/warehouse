@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:warehouse/components/choise_button.dart';
-import 'package:warehouse/components/counter.dart';
+import 'package:warehouse/components/colored_button.dart';
 import 'package:warehouse/components/filter_choice.dart';
-import 'package:warehouse/components/floating_label_edit_box.dart';
 import 'package:warehouse/components/progress_circular.dart';
 import 'package:warehouse/components/rounded_rect_image.dart';
 import 'package:warehouse/components/screen_action_bar.dart';
@@ -10,6 +8,7 @@ import 'package:warehouse/components/screen_frame.dart';
 import 'package:warehouse/constants/theme_constant.dart';
 import 'package:warehouse/constants/url_constant.dart';
 import 'package:warehouse/pages/add_product.dart';
+import 'package:warehouse/pages/add_sku_page.dart';
 import 'package:warehouse/utils/api_service.dart';
 import 'package:warehouse/utils/common_function.dart';
 import 'package:warehouse/utils/user_service.dart';
@@ -143,7 +142,17 @@ class _ProductListPageState extends State<ProductListPage> {
                                           style: getTextTheme().titleSmall,
                                         ),
                                         addHorizontalSpace(),
-                                        Text('${product['sku_id']}'),
+                                        Row(
+                                          children: [
+                                            Text('${product['sku_id']}'),
+                                            addHorizontalSpace(),
+                                            InkWell(
+                                              onTap: (){
+                                                addSKU(product['id']);
+                                              },
+                                              child: Icon(Icons.add , color: COLOR_PRIMARY,))
+                                          ],
+                                        ),
                                       ],
                                     ),
 
@@ -195,6 +204,8 @@ class _ProductListPageState extends State<ProductListPage> {
                                   ],
                                 ),
                               ),
+
+                              
                             ],
                           ),
                           addVerticalSpace(),
@@ -244,5 +255,10 @@ class _ProductListPageState extends State<ProductListPage> {
             quantity;
       });
     }
+  }
+  
+  addSKU(product_id) {
+
+     Navigator.push(context, MaterialPageRoute(builder: (builder)=> AddSkuPage(product_id: product_id,)));
   }
 }

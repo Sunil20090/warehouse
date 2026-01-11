@@ -8,7 +8,7 @@ class ProgressCircular extends StatelessWidget {
     super.key,
     this.width = 25,
     this.height = 25,
-    this.color = COLOR_BASE,
+    this.color = COLOR_BLACK,
   });
 
   @override

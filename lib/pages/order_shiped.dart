@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:warehouse/components/item_order.dart';
 import 'package:warehouse/components/screen_action_bar.dart';
 import 'package:warehouse/components/screen_frame.dart';
-import 'package:warehouse/constants/url_constant.dart';
-import 'package:warehouse/utils/api_service.dart';
 
 class OrderShiped extends StatefulWidget {
   const OrderShiped({super.key});
