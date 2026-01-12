@@ -44,28 +44,35 @@ class _ItemOrderState extends State<ItemOrder> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
-              Row(
-                children: [
-                  Text("Name"),
-                  addHorizontalSpace(),
-                  Text(
-                    widget.order['product_name'],
-                    style: getTextTheme().titleSmall,
-                  ),
-                ],
-              ),
-
+          
               Row(
                 children: [
                   Text("Customer Name"),
                   addHorizontalSpace(),
                   Text(
                     widget.order['custumer_name'],
+                    style: getTextTheme(color: COLOR_PRIMARY).titleSmall,
+                  ),
+                ],
+              ),
+          
+              Row(
+                children: [
+                  Text("Name"),
+                  addHorizontalSpace(),
+                  Text(
+                    (widget.order['product_name'].length > 20)
+                    ? widget.order['product_name'].toString().substring(0, 20)
+                    : widget.order['product_name'],
+                    maxLines:3,
+                    softWrap:true,
+                    overflow: TextOverflow.ellipsis,
                     style: getTextTheme().titleSmall,
                   ),
                 ],
               ),
+          
+              
               Row(
                 children: [
                   Text("Order Id:"),
@@ -96,7 +103,7 @@ class _ItemOrderState extends State<ItemOrder> {
                   ),
                 ],
               ),
-
+          
               Row(
                 children: [
                   Text("Last update"),
@@ -114,7 +121,7 @@ class _ItemOrderState extends State<ItemOrder> {
               ...widget.children!
             ],
           ),
-
+          
           addHorizontalSpace(),
           Spacer(),
           if (widget.isDeletable)

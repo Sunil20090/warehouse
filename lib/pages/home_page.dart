@@ -4,6 +4,7 @@ import 'package:warehouse/components/progress_circular.dart';
 import 'package:warehouse/components/screen_action_bar.dart';
 import 'package:warehouse/components/screen_frame.dart';
 import 'package:warehouse/constants/url_constant.dart';
+import 'package:warehouse/pages/dashboard_page.dart';
 import 'package:warehouse/pages/dispatch_page.dart';
 import 'package:warehouse/pages/order_shiped.dart';
 import 'package:warehouse/pages/pack_orders_page.dart';
@@ -73,7 +74,12 @@ class _HomePageState extends State<HomePage> {
           CardWithBadge(name: 'Product List', badge: '${_summary['product_count']}', onCardClicked: openProductList,),
           CardWithBadge(name: 'Registered Orders', badge: '${_summary['registered_orders']}', onCardClicked: openRegisteredOrder,),
           CardWithBadge(name: 'Packed Orders', badge: '${_summary['paked_orders']}', onCardClicked: openPackOrders,),
-          CardWithBadge(name: 'Outgoing Orders', badge: '${_summary['outgoing_orders']}', onCardClicked: openProductList,),
+          CardWithBadge(
+                  name: 'Outgoing Orders',
+                  badge: '${_summary['outgoing_orders']}',
+                  onCardClicked: openProductList,
+                ),
+                CardWithBadge(name: 'Dashboard', onCardClicked: openDashboardPage,),
           
         ],
       )
@@ -88,6 +94,14 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+    );
+  }
+
+
+  openDashboardPage() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (builder) => DashboardPage()),
     );
   }
 

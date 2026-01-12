@@ -25,7 +25,7 @@ class _CardWithBadgeState extends State<CardWithBadge> {
                   children: [
                     Text(widget.name, style: getTextTheme().headlineSmall),
                     Spacer(),
-                    Badge(
+                    if(widget.badge != null) Badge(
                         backgroundColor: COLOR_PRIMARY,
                         padding: CONTENT_PADDING,
                         textStyle: getTextTheme().titleSmall,
