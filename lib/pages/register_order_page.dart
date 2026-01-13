@@ -31,8 +31,7 @@ class _RegisterOrderPageState extends State<RegisterOrderPage> {
 
   initOrderList() async {
 
-    var body = {
-    };
+    var body = {};
 
     setState(() {
       loading = true;

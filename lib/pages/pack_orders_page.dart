@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:warehouse/components/colored_button.dart';
 import 'package:warehouse/components/item_order.dart';
 import 'package:warehouse/components/loadable_button.dart';
 import 'package:warehouse/components/progress_circular.dart';
