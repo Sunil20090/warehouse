@@ -20,6 +20,7 @@ const URL_UPDATE_STOCK = '$_domain${_baseUrl}updateStock';
 // const URL_SHIPPED_ORDERS = '$_domain${_baseUrl}shippedOrders';
 
 const URL_PACK_ORDER = '$_domain${_baseUrl}packOrder';
+const URL_DASHBOARD = '$_domain${_baseUrl}dashboard';
 
 
 

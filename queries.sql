@@ -115,7 +115,7 @@ CREATE TABLE warehouse_sku_of_product (
 
 select * from warehouse_products;           
 select * from warehouse_products_images;    
-select * from warehouse_products_orders;    
+select * from warehouse_products_orders; 
 select * from warehouse_sku_of_product;     
 select * from warehouse_stages;             
 select * from warehouse_stages_of_orders;   

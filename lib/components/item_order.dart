@@ -44,7 +44,6 @@ class _ItemOrderState extends State<ItemOrder> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-          
               Row(
                 children: [
                   Text("Customer Name"),
@@ -55,24 +54,26 @@ class _ItemOrderState extends State<ItemOrder> {
                   ),
                 ],
               ),
-          
+
               Row(
                 children: [
                   Text("Name"),
                   addHorizontalSpace(),
                   Text(
                     (widget.order['product_name'].length > 20)
-                    ? widget.order['product_name'].toString().substring(0, 20)
-                    : widget.order['product_name'],
-                    maxLines:3,
-                    softWrap:true,
+                        ? widget.order['product_name'].toString().substring(
+                            0,
+                            20,
+                          )
+                        : widget.order['product_name'],
+                    maxLines: 3,
+                    softWrap: true,
                     overflow: TextOverflow.ellipsis,
                     style: getTextTheme().titleSmall,
                   ),
                 ],
               ),
-          
-              
+
               Row(
                 children: [
                   Text("Order Id:"),
@@ -95,7 +96,7 @@ class _ItemOrderState extends State<ItemOrder> {
               ),
               Row(
                 children: [
-                  Text("SKU Id"),
+                  Text("SKU Id:"),
                   addHorizontalSpace(),
                   Text(
                     widget.order['sku_name'],
@@ -103,25 +104,24 @@ class _ItemOrderState extends State<ItemOrder> {
                   ),
                 ],
               ),
-          
+
               Row(
                 children: [
-                  Text("Last update"),
+                  Text("Registered:"),
                   addHorizontalSpace(),
                   Text(
                     timeAgo(
-                      widget.order['updated_on'],
+                      widget.order['created_on'],
                       timezoneOffset: Duration(hours: 5, minutes: 30),
                     ),
                     style: getTextTheme().titleSmall,
                   ),
                 ],
               ),
-              if(widget.children != null)
-              ...widget.children!
+              if (widget.children != null) ...widget.children!,
             ],
           ),
-          
+
           addHorizontalSpace(),
           Spacer(),
           if (widget.isDeletable)

@@ -5,8 +5,6 @@ import 'package:warehouse/components/screen_action_bar.dart';
 import 'package:warehouse/components/screen_frame.dart';
 import 'package:warehouse/constants/url_constant.dart';
 import 'package:warehouse/pages/dashboard_page.dart';
-import 'package:warehouse/pages/dispatch_page.dart';
-import 'package:warehouse/pages/order_shiped.dart';
 import 'package:warehouse/pages/pack_orders_page.dart';
 import 'package:warehouse/pages/product_list_page.dart';
 import 'package:warehouse/pages/register_order_page.dart';
@@ -97,7 +95,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-
   openDashboardPage() async {
     await Navigator.push(
       context,
@@ -105,13 +102,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  moveToDispatch() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (builder) => DispatchPage()),
-    );
-    initSummary();
-  }
+ 
 
   openPackOrders() async {
     await Navigator.push(

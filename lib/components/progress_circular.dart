@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 
 class ProgressCircular extends StatelessWidget {
   final double width, height;
+  final EdgeInsets padding;
   final Color color;
   ProgressCircular({
     super.key,
     this.width = 25,
     this.height = 25,
+    this.padding = const EdgeInsets.all(4),
     this.color = COLOR_BLACK,
   });
 
@@ -16,7 +18,7 @@ class ProgressCircular extends StatelessWidget {
     return Container(
       width: width,
       height: height,
-      padding: EdgeInsets.all(4),
+      padding: padding,
       child: CircularProgressIndicator(color: color),
     );
   }

@@ -21,8 +21,10 @@ class AddProduct extends StatefulWidget {
 
 class _AddProductState extends State<AddProduct> {
   TextEditingController _nameController = TextEditingController();
+  TextEditingController _shortNameController = TextEditingController();
   TextEditingController _skuIdController = TextEditingController();
   TextEditingController _priceController = TextEditingController();
+  TextEditingController _bankSettlementController = TextEditingController();
   File? _imageFile;
 
   @override
@@ -34,9 +36,18 @@ class _AddProductState extends State<AddProduct> {
           addVerticalSpace(),
           FloatingLabelEditBox(labelText: 'Name', controller: _nameController),
           addVerticalSpace(),
+          FloatingLabelEditBox(labelText: 'Short Name', controller: _shortNameController),
+          addVerticalSpace(),
           FloatingLabelEditBox(labelText: 'SKU ID', controller: _skuIdController),
           addVerticalSpace(),
           FloatingLabelEditBox(labelText: 'Buying price', controller: _priceController, textInputType: TextInputType.number,),
+          addVerticalSpace(),
+          
+          FloatingLabelEditBox(
+            labelText: 'Bank Settlement',
+            controller: _bankSettlementController,
+            textInputType: TextInputType.number,
+          ),
           addVerticalSpace(),
           ChooseImage(
             onFileSelected: (imageFile) {
@@ -73,8 +84,8 @@ class _AddProductState extends State<AddProduct> {
       return;
     }
 
-    if (_priceController.text.trim().isEmpty) {
-      showAlert(context, 'Empty!', 'price is empty');
+    if (_priceController.text.trim().isEmpty || _bankSettlementController.text.trim().isEmpty) {
+      showAlert(context, 'Empty!', 'prices is empty');
       return;
     }
 
@@ -88,6 +99,9 @@ class _AddProductState extends State<AddProduct> {
       "user_id": await getUserId(),
       "name": _nameController.text,
       "sku_name": _skuIdController.text,
+      "short_name" : _shortNameController.text,
+      "buying_price" : double.parse(_priceController.text),
+      "bank_settlement" : double.parse(_bankSettlementController.text),
       "product_image": base64,
     };
 
