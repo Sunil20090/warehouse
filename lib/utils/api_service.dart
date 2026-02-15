@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:warehouse/constants/url_constant.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
@@ -17,6 +17,17 @@ class ApiResponse {
   });
 }
 
+String formatJsonString(String jsonString) {
+  final decoded = jsonDecode(jsonString);
+  const encoder = JsonEncoder.withIndent('  ');
+  return encoder.convert(decoded);
+}
+
+String formatJson(dynamic json) {
+  const encoder = JsonEncoder.withIndent('  ');
+  return encoder.convert(json);
+}
+
 Future<ApiResponse> postService(String url, dynamic body) async {
   var request_body = jsonEncode(body);
 
@@ -29,9 +40,16 @@ Future<ApiResponse> postService(String url, dynamic body) async {
   var reponseBody = response.statusCode == 200
       ? jsonDecode(response.body)
       : response.body;
+
+  final payload = request_body.length > 100
+      ? 'Playload is large'
+      : request_body;
+  // if(Platform.isAndroid){
+
   print(
-    'URL: $url \n Payload: $request_body\n  \n Response Body:\n \t$reponseBody',
+    'Status Code: ${response.statusCode} \nURL: $url \n Payload: ${formatJson(payload)}\n  \n Response Body:\n \t${formatJson(reponseBody)}',
   );
+  // }
   return ApiResponse(
     body: reponseBody,
     isSuccess: response.statusCode == 200,
@@ -52,12 +70,10 @@ Future<ApiResponse> getService(String url) async {
 }
 
 Future<http.MultipartFile> getMultiParts(
-  File file, [
+  Uint8List fileBytes, [
   String name = 'image.png',
 ]) async {
-  var image_bytes = await file.readAsBytes();
-
-  return http.MultipartFile.fromBytes('image', image_bytes, filename: name);
+  return http.MultipartFile.fromBytes('image', fileBytes, filename: name);
 }
 
 postWithProgress({
@@ -102,4 +118,40 @@ insertScreen(
     "event_name": event_name,
   };
   await postService(URL_SCREEN_RECORD, body);
+}
+
+Future<ApiResponse> postBytesService(
+  String url,
+  Uint8List bytes, [
+  String fileName = 'sample',
+]) async {
+  var uri = Uri.parse(url);
+
+  var request = http.MultipartRequest("POST", uri);
+
+  request.files.add(
+    http.MultipartFile.fromBytes(
+      "file", // must match backend field name
+      bytes,
+      filename: fileName,
+    ),
+  );
+
+  var responseStream = await request.send();
+
+  http.Response response = await http.Response.fromStream(responseStream);
+
+  var reponseBody = response.statusCode == 200
+      ? jsonDecode(response.body)
+      : response.body;
+
+  // print(
+  //   'Status Code: ${response.statusCode} \nURL: $url \n Payload: binary\n  \n Response Body:\n \t${formatJson(reponseBody)}',
+  // );
+
+  return ApiResponse(
+    isSuccess: response.statusCode == 200,
+    body: reponseBody,
+    response: response,
+  );
 }

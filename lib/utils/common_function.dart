@@ -1,7 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_barcode_scanner_plus/flutter_barcode_scanner_plus.dart';
+import 'package:intl/intl.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:warehouse/components/colored_button.dart';
+import 'package:warehouse/constants/local_constant.dart';
 import 'package:warehouse/constants/theme_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -70,17 +75,23 @@ String formatNumber(num number) {
   }
 }
 
-String timeAgo(String isoTimestamp, {Duration? timezoneOffset}) {
-  // Parse datetime from string
+String standardDate(
+  String isoTimestamp, {
+  Duration timezoneOffset = const Duration(hours: 5, minutes: 30),
+  String format = ' hh:mm a yyyy MMM dd'
+}) {
+  DateTime dateTime = DateTime.parse(isoTimestamp);
+  dateTime = dateTime.add(timezoneOffset);
+  final DateFormat formatter = DateFormat(format);
+  return formatter.format(dateTime);
+}
+
+String timeAgo(String isoTimestamp, {Duration timezoneOffset = const Duration(hours: 5, minutes: 30)}) {
   DateTime dateTime = DateTime.parse(isoTimestamp);
 
   if (timezoneOffset != null) {
     dateTime = dateTime.toUtc().add(timezoneOffset);
-  } else if (!dateTime.isUtc && dateTime.timeZoneOffset != Duration.zero) {
-    dateTime = dateTime.toUtc();
-  } else {
-    dateTime = dateTime.toUtc();
-  }
+  } 
 
   final now = DateTime.now().toUtc();
   final diff = now.difference(dateTime);
@@ -124,7 +135,6 @@ Future<String> fileToBase64(File file) async {
   return base64;
 }
 
-
 Future<String> getScanValue() async {
   String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
     "#fff666",
@@ -138,4 +148,69 @@ Future<String> getScanValue() async {
   }
 
   return "";
+}
+
+Future<File> base64ToPdf(String base64String, String fileName) async {
+  // Remove metadata if present
+  final cleanBase64 = base64String.contains(',')
+      ? base64String.split(',').last
+      : base64String;
+
+  final bytes = base64Decode(cleanBase64);
+
+  final dir = await getApplicationDocumentsDirectory();
+  final file = File('${dir.path}/$fileName.pdf');
+
+  await file.writeAsBytes(bytes, flush: true);
+  return file;
+}
+
+void openPdf(File file) {
+  OpenFilex.open(file.path);
+}
+
+String getFileName(File file) {
+  final filePath = file.absolute.path;
+  String fileName = filePath.split(Platform.pathSeparator).last;
+  return fileName;
+}
+
+filterItemBy(List _order_list, String value) {
+  if (value == "") {
+    return _order_list;
+  }
+  return _order_list.where((order) {
+    return ('${order['custumer_name']}'.toLowerCase()).contains(
+          value.toLowerCase(),
+        ) ||
+        ('${order['tracking_id']}'.toLowerCase()).contains(value.toLowerCase()) ||
+        ('${order['delivery_partener']}'.toLowerCase()).contains(
+          value.toLowerCase(),
+        ) ||
+        ('${order['sku_name']}'.toLowerCase()).contains(value.toLowerCase()) ||
+        ('${order['actual_status']}'.toLowerCase()).contains(value.toLowerCase()) ||
+        ('${order['order_number']}'.toLowerCase()).contains(value.toLowerCase()) ||
+        ('${order['product_name']}'.toLowerCase()).contains(value.toLowerCase());
+  }).toList();
+}
+
+Future<File?> pickCSV() async {
+  FilePickerResult? result = await FilePicker.platform.pickFiles(
+    type: FileType.custom,
+    allowedExtensions: ['csv'],
+  );
+
+  if (result == null) {
+    // User canceled file picking
+    return null;
+  }
+
+  final PlatformFile file = result.files.first;
+
+  return File(file.path!);
+}
+
+
+showApiError(context){
+  showAlert(context, 'Alert!', 'Network/Service not responed');
 }

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 saveJson(String key, dynamic jsonObj) async {
@@ -13,7 +12,6 @@ Future<dynamic> loadJson(String key) async {
 
   if (prefs.containsKey(key)) {
     String? jsonString = prefs.getString(key);
-      // print('jsonString = $jsonString');
 
     if (jsonString != null) {
       return jsonDecode(jsonString);
@@ -31,8 +29,6 @@ Future deleteJson(String key) async {
 
   if (prefs.containsKey(key)) {
     await prefs.remove(key);
-    print('$key deleted');
   } else {
-    print('$key does not exist');
   }
 }

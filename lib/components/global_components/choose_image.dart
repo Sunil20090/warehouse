@@ -26,11 +26,14 @@ class _ChooseImageState extends State<ChooseImage> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Divider(),
           addVerticalSpace(),
           Text("Add Image", style: getTextTheme().titleSmall),
+          addVerticalSpace(),
           Row(
             children: [
               (_imageFile == null)
@@ -48,13 +51,15 @@ class _ChooseImageState extends State<ChooseImage> {
                     ),
               Spacer(),
               ColoredButton(
-                child: Text('Choose', style: TextStyle(color: COLOR_WHITE)),
+                child: Text('Choose', style:getTextTheme(color: COLOR_BASE).titleMedium),
                 onPressed: () {
                   pickImage();
                 },
               ),
+              addHorizontalSpace()
             ],
           ),
+          Divider()
         ],
       ),
     );

@@ -14,14 +14,14 @@ const Color COLOR_WHITE = Colors.white;
 const Color COLOR_BLACK = Color.fromARGB(255, 34, 34, 34);
 const Color COLOR_GREY = Color.fromARGB(255, 102, 102, 102);
 
-const COLOR_PRIMARY = Color.fromARGB(255, 179, 1, 119);
-const COLOR_SECONDARY = Color.fromARGB(255, 248, 145, 214);
+const COLOR_PRIMARY = Color.fromARGB(255, 138, 0, 92);
+const COLOR_SECONDARY = Color.fromARGB(255, 235, 0, 156);
 const COLOR_BASE = Color.fromARGB(255, 229, 217, 241);
-const COLOR_BASE_DARKER = Color.fromARGB(255, 226, 226, 226);
+const COLOR_BASE_DARKER = Color.fromARGB(255, 161, 160, 160);
 
-const COLOR_BASE_SUCCESS = Color.fromARGB(255, 2, 117, 60);
+const COLOR_BASE_SUCCESS = Color.fromARGB(255, 0, 181, 90);
 const COLOR_BASE_ERROR = Color.fromARGB(255, 136, 0, 0);
-const COLOR_RED = Color.fromARGB(255, 245, 109, 109);
+const COLOR_RED = Color.fromARGB(255, 139, 2, 2);
 
 const COLOR_TRANSLUSCENT_BLACK = Color.fromARGB(118, 0, 0, 0);
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:warehouse/components/item_order.dart';
 import 'package:warehouse/components/loadable_button.dart';
-import 'package:warehouse/components/progress_circular.dart';
 import 'package:warehouse/components/screen_action_bar.dart';
 import 'package:warehouse/components/screen_frame.dart';
 import 'package:warehouse/constants/theme_constant.dart';
@@ -29,24 +28,6 @@ class _PackOrdersPageState extends State<PackOrdersPage> {
   @override
   void initState() {
     super.initState();
-    initPackedOrders();
-  }
-
-  initPackedOrders() async {
-    setState(() {
-      _getting_orders = true;
-    });
-    ApiResponse response = await postService(URL_GET_PACKED_ORDERS, {});
-
-    setState(() {
-      _getting_orders = false;
-    });
-
-    if (response.isSuccess) {
-      setState(() {
-        _orderList = response.body;
-      });
-    }
   }
 
   @override
@@ -58,10 +39,7 @@ class _PackOrdersPageState extends State<PackOrdersPage> {
           addVerticalSpace(),
           InkWell(
             onTap: () async {
-              final tracking_id = await getScanValue();
-              if (tracking_id != "") {
-                fetchOrderDetails(tracking_id);
-              }
+              scanAndFetch();
             },
             child: Card(
               child: Column(
@@ -104,50 +82,18 @@ class _PackOrdersPageState extends State<PackOrdersPage> {
           Column(
             children: [
               ..._packable_order_list.map((order) {
-                return ItemOrder(order: order, onDeleteClicked: deleteOrder);
+                return Container(
+                  padding: CONTENT_PADDING,
+                  color: order['stage_id'] == 1
+                      ? const Color.fromARGB(255, 220, 255, 238)
+                      : const Color.fromARGB(255, 247, 224, 224),
+                  child: ItemOrder(order: order),
+                );
               }).toList(),
               Divider(),
             ],
           ),
           addVerticalSpace(DEFAULT_LARGE_SPACE),
-
-          Divider(),
-          Row(
-            children: [
-              Text('Paked Orders (History) (${_orderList.length}):'),
-              addHorizontalSpace(),
-              if (_getting_orders) ProgressCircular(),
-            ],
-          ),
-
-          addVerticalSpace(),
-
-          ..._orderList.map((order) {
-            return Column(
-              children: [
-                ItemOrder(
-                  order: order,
-                  isDeletable: false,
-                  children: [
-                    Row(
-                      children: [
-                        Text("Packed On:"),
-                        addHorizontalSpace(),
-                        Text(
-                          timeAgo(
-                            order['packed_on'],
-                            timezoneOffset: Duration(hours: 5, minutes: 30),
-                          ),
-                          style: getTextTheme().titleSmall,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Divider(),
-              ],
-            );
-          }).toList(),
         ],
       ),
     );
@@ -155,6 +101,19 @@ class _PackOrdersPageState extends State<PackOrdersPage> {
 
   fetchOrderDetails(String trackingId) async {
     var body = {"tracking_id": trackingId};
+
+    final items = _packable_order_list
+        .where((element) => element['tracking_id'] == trackingId)
+        .toList();
+
+    if (items.isNotEmpty) {
+      showAlert(
+        context,
+        "Already!",
+        "Already scanned \t\n \"${items[0]['custumer_name']}\"",
+      );
+      return;
+    }
 
     setState(() {
       _fetching_orderDetails = true;
@@ -169,25 +128,14 @@ class _PackOrdersPageState extends State<PackOrdersPage> {
     if (response.isSuccess) {
       if (response.body.length > 0) {
         setState(() {
-          _packable_order_list.add(response.body[0]);
+          // _packable_order_list.add(response.body[0]);
+          var item = response.body[0];
+
+          _packable_order_list.insert(0, item);
         });
       } else {
         showAlert(context, "Failed!", "Item not found!");
       }
-    }
-  }
-
-  void deleteOrder(order) {
-    print('deleting');
-    int index = _packable_order_list.indexWhere(
-      (el) => el['tracking_id'] == order['tracking_id'],
-    );
-
-    print(index);
-    if (index != -1) {
-      setState(() {
-        _packable_order_list.removeAt(index);
-      });
     }
   }
 
@@ -214,12 +162,26 @@ class _PackOrdersPageState extends State<PackOrdersPage> {
     });
 
     if (response.isSuccess) {
-      if (response.body['status'] == 'OK') {
-        showAlert(context, response.body['heading'], response.body['message']);
-        initPackedOrders();
-      }
+      // _packable_order_list.
+
+      _packable_order_list.forEach((order) {
+        List response_tracking_ids = response.body;
+        if (response_tracking_ids.any(
+          (elment) => elment['tracking_id'] == order['tracking_id'],
+        )) {
+          order['stage_id'] = 2;
+        }
+      });
     } else {
-      showAlert(context, "Failed!", "Item not found!");
+      showAlert(context, "Failed!", "Failed to packing");
+    }
+  }
+
+  scanAndFetch() async {
+    final tracking_id = await getScanValue();
+    if (tracking_id != "") {
+      scanAndFetch();
+      fetchOrderDetails(tracking_id);
     }
   }
 }

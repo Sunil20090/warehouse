@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:warehouse/components/card_with_badge.dart';
+import 'package:warehouse/components/project_components/card_with_badge.dart';
 import 'package:warehouse/components/progress_circular.dart';
-import 'package:warehouse/components/screen_action_bar.dart';
-import 'package:warehouse/components/screen_frame.dart';
+import 'package:warehouse/constants/theme_constant.dart';
 import 'package:warehouse/constants/url_constant.dart';
+import 'package:warehouse/pages/cancel_orders/cancel_order_page.dart';
 import 'package:warehouse/pages/dashboard_page.dart';
-import 'package:warehouse/pages/pack_orders_page.dart';
-import 'package:warehouse/pages/product_list_page.dart';
-import 'package:warehouse/pages/register_order_page.dart';
-import 'package:warehouse/pages/view_bill_page.dart';
+import 'package:warehouse/pages/inventory/inventory_page.dart';
+import 'package:warehouse/pages/order_shiped.dart';
+import 'package:warehouse/pages/order_status_update.dart';
+import 'package:warehouse/pages/packing_dashboard/pack_order_history_page.dart';
+import 'package:warehouse/pages/packing_dashboard/pack_orders_page.dart';
+import 'package:warehouse/pages/print_page.dart';
+import 'package:warehouse/pages/products/product_list_page.dart';
+import 'package:warehouse/pages/registration_dashboard/add_invoice_page.dart';
+import 'package:warehouse/pages/registration_dashboard/registered_history_page.dart';
+import 'package:warehouse/pages/return_orders/return_order_page.dart';
+import 'package:warehouse/pages/search_orders.dart';
 import 'package:warehouse/utils/api_service.dart';
 import 'package:warehouse/utils/common_function.dart';
 
@@ -31,7 +38,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   initSummary() async {
-
     setState(() {
       _loading = true;
     });
@@ -49,49 +55,124 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return ScreenFrame(
-      titleBar: ScreenActionBar(
-        title: 'Home',
-        child: InkWell(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (builder) => ViewBillPage(
-                pdfUrl:
-                    'https://ssc.nic.in/Downloads/portal/english/Syllabus-JE%20Eamination.pdf',
-              ),
-            ),
-          ),
-          child: Icon(Icons.view_agenda),
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Text('Home'),
+            addHorizontalSpace(),
+            if (_loading) ProgressCircular(),
+          ],
         ),
+        actions: [
+          IconButton(onPressed: initSummary, icon: Icon(Icons.replay_outlined)),
+        ],
       ),
-      body: !_loading 
-      ? Column(
-        children: [
-
-          CardWithBadge(name: 'Product List', badge: '${_summary['product_count']}', onCardClicked: openProductList,),
-          CardWithBadge(name: 'Registered Orders', badge: '${_summary['registered_orders']}', onCardClicked: openRegisteredOrder,),
-          CardWithBadge(name: 'Packed Orders', badge: '${_summary['paked_orders']}', onCardClicked: openPackOrders,),
-          CardWithBadge(
-                  name: 'Outgoing Orders',
-                  badge: '${_summary['outgoing_orders']}',
+      body: (_summary != null)
+          ? GridView.count(
+              crossAxisCount: 2,
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              children: [
+                CardWithBadge(
+                  name: 'Product List',
+                  badge: '${_summary['product_count']}',
                   onCardClicked: openProductList,
+                  iconType: Icons.category_outlined,
+                  iconColor: Colors.deepOrange,
                 ),
-                CardWithBadge(name: 'Dashboard', onCardClicked: openDashboardPage,),
-          
-        ],
-      )
-      : Column(
-        children: [
-          addVerticalSpace(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ProgressCircular()
-            ],
-          ),
-        ],
-      ),
+
+                CardWithBadge(
+                  name: 'Items & Inventory',
+                  onCardClicked: openInventoryPage,
+                  iconType: Icons.inventory_2_outlined,
+                  iconColor: Colors.green,
+                ),
+                CardWithBadge(
+                  name: 'Dashboard',
+                  onCardClicked: openDashboardPage,
+                  iconType: Icons.bar_chart_outlined,
+                  iconColor: Colors.deepPurple,
+                ),
+
+                CardWithBadge(
+                  name: 'Print Area',
+                  onCardClicked: openPrintPage,
+                  iconType: Icons.print_outlined,
+                  iconColor: Colors.indigoAccent,
+                ),
+
+                CardWithBadge(
+                  name: 'Global Search',
+                  onCardClicked: openGlobalSearch,
+                  iconType: Icons.search,
+                  iconColor: Colors.orange,
+                ),
+
+                CardWithBadge(
+                  name: 'Label Created',
+                  badge: '${_summary['registered_orders']}',
+                  onCardClicked: openRegisteredOrder,
+                  iconType: Icons.assignment_outlined,
+                  iconColor: Colors.teal,
+                ),
+
+                CardWithBadge(
+                  name: 'Add Invoices',
+                  onCardClicked: openAddInvoicePage,
+                  iconType: Icons.receipt_long_outlined,
+                  iconColor: Colors.purple,
+
+                ),
+
+                CardWithBadge(
+                  name: 'Packed Orders',
+                  badge: '${_summary['paked_orders']}',
+                  onCardClicked: openPackOrders,
+                  iconType: Icons.archive_outlined,
+                  iconColor: Colors.pink,
+                ),
+
+                CardWithBadge(
+                  name: 'Scan and Pack',
+                  onCardClicked: scanAndPack,
+                  iconType: Icons.qr_code_scanner,
+                  iconColor: const Color.fromARGB(255, 2, 32, 152),
+                ),
+
+                CardWithBadge(
+                  name: 'Ready to dispatch',
+                  badge: '${_summary['outgoing_orders']}',
+                  iconType: Icons.local_shipping_outlined,
+                  iconColor: Colors.green,
+                  onCardClicked: openOrderShippedPage,
+                ),
+
+                CardWithBadge(
+                  name: 'Returned Orders',
+                  onCardClicked: openReturnOrderPage,
+                  badge: '${_summary['return_orders']}',
+                  iconColor: const Color.fromARGB(255, 1, 85, 134),
+                  iconType: Icons.assignment_return_outlined,
+                ),
+
+                CardWithBadge(
+                  name: 'Cancel Orders',
+                  onCardClicked: openCancelOrderPage,
+                  badge: '${_summary['cancel_orders']}',
+                  iconType: Icons.highlight_off,
+                  iconColor: const Color.fromARGB(255, 236, 8, 8),
+                ),
+
+                CardWithBadge(
+                  name: 'Update Status',
+                  onCardClicked: openStatusUpdatePage,
+                  iconType: Icons.file_present,
+                  iconColor: COLOR_SECONDARY,
+                ),
+              ],
+            )
+          : Container(),
     );
   }
 
@@ -102,23 +183,87 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
- 
-
-  openPackOrders() async {
-    await Navigator.push(
+  openPackOrders() {
+    Navigator.push(
       context,
-      MaterialPageRoute(builder: (builder) => PackOrdersPage()),
+      MaterialPageRoute(builder: (builder) => PackOrderHistoryPage()),
     );
   }
 
-  openProductList() async {
-    await Navigator.push(
+  openProductList() {
+    Navigator.push(
       context,
       MaterialPageRoute(builder: (builder) => ProductListPage()),
     );
   }
 
-  openRegisteredOrder() async{
-    await Navigator.push(context, MaterialPageRoute(builder: (builder) => RegisterOrderPage()));
+  openRegisteredOrder() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (builder) => RegisteredHistoryPage()),
+    );
+  }
+
+  openStatusUpdatePage() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (builder) => OrderStatusUpdate()),
+    );
+  }
+
+  openAddInvoicePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (builder) => AddInvoicePage()),
+    );
+  }
+
+  scanAndPack() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (builder) => PackOrdersPage()),
+    );
+  }
+
+  openReturnOrderPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (builder) => ReturnOrderPage()),
+    );
+  }
+
+  openCancelOrderPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (builder) => CancelOrderPage()),
+    );
+  }
+
+  openGlobalSearch() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (builder) => SearchOrders()),
+    );
+  }
+
+  openOrderShippedPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (builder) => OrderShiped()),
+    );
+  }
+
+  openPrintPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (builder) => PrintPage()),
+    );
+  }
+
+  openInventoryPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (builder) => InventoryPage()),
+    );
   }
 }

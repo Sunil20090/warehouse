@@ -52,7 +52,7 @@ class _SplashPageState extends State<SplashPage> {
     return Container(
       color: COLOR_WHITE,
       alignment: Alignment.center,
-      child: SizedBox(width: 50, height: 50, child: Image.asset(IMAGE_PALM_TREE)),
+      child: SizedBox(width: 50, height: 50, child: Image.asset(ICON_APP_ICON)),
     );
   }
 

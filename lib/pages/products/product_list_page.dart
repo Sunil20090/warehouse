@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:warehouse/components/colored_button.dart';
-import 'package:warehouse/components/filter_choice.dart';
 import 'package:warehouse/components/progress_circular.dart';
+import 'package:warehouse/components/project_components/filters_by_url.dart';
 import 'package:warehouse/components/rounded_rect_image.dart';
 import 'package:warehouse/components/screen_action_bar.dart';
 import 'package:warehouse/components/screen_frame.dart';
 import 'package:warehouse/constants/theme_constant.dart';
 import 'package:warehouse/constants/url_constant.dart';
-import 'package:warehouse/pages/add_product.dart';
-import 'package:warehouse/pages/add_sku_page.dart';
+import 'package:warehouse/pages/products/add_product.dart';
+import 'package:warehouse/pages/products/add_sku_page.dart';
+import 'package:warehouse/pages/products/edit_product.dart';
 import 'package:warehouse/utils/api_service.dart';
 import 'package:warehouse/utils/common_function.dart';
 import 'package:warehouse/utils/user_service.dart';
@@ -25,6 +25,8 @@ class _ProductListPageState extends State<ProductListPage> {
 
   var isLoading = false;
 
+  String _currentFilter = "";
+
   @override
   void initState() {
     super.initState();
@@ -33,7 +35,7 @@ class _ProductListPageState extends State<ProductListPage> {
   }
 
   initProducts() async {
-    var body = {"user_id": await getUserId()};
+    var body = {"user_id": await getUserId(), "filter": _currentFilter};
 
     setState(() {
       isLoading = true;
@@ -56,7 +58,7 @@ class _ProductListPageState extends State<ProductListPage> {
   Widget build(BuildContext context) {
     return ScreenFrame(
       titleBar: ScreenActionBar(
-        title: 'Product List',
+        title: 'Product List (${_productList.length})',
         child: Row(
           children: [
             IconButton(
@@ -68,56 +70,51 @@ class _ProductListPageState extends State<ProductListPage> {
           ],
         ),
       ),
-      body: !isLoading
-          ? Column(
+      body:  Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Text('Filter:'),
-                    FilterChoice(
-                      onChosen: (appliedModals) {
-                        print(appliedModals);
-                      },
-                      filterOptions: [
-                        FilterModal(value: 'Out of stock'),
-                        FilterModal(value: 'Low Stock', isApplied: true),
-                      ],
-                    ),
-                  ],
+                FiltersByUrl(
+                  filterFor: "product",
+                  onClicked: (filter) {
+                    _currentFilter = filter;
+                    initProducts();
+                  },
                 ),
                 addVerticalSpace(),
-                Column(
+                !isLoading
+            ?Column(
                   children: _productList.map((product) {
-                    final TextEditingController _controller =
-                        TextEditingController(text: '${product['quantity']}');
-
                     return ListTile(
-                      contentPadding: CONTENT_PADDING,
+                      onTap: () {
+                        openProductDetails(product['sku_id']);
+                      },
                       title: Column(
                         children: [
                           Row(
                             children: [
                               Column(
                                 children: [
-                                  RoundedRectImage(
-                                    fit: BoxFit.contain,
-                                    thumbnail_url: product['thumbnail_url'],
-                                    width: 100,
-                                    height: 80,
+                                  Stack(
+                                    children: [
+                                      RoundedRectImage(
+                                        fit: BoxFit.contain,
+                                        thumbnail_url: product['thumbnail_url'],
+                                        image_url: product['image_url'],
+                                        width: 100,
+                                        height: 80,
+                                      ),
+                                      Positioned(
+                                        left: 4,
+                                        top: 4,
+                                        child: Image.network(
+                                          product['platform_url'],
+                                          width: 20,
+                                          height: 20,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   addVerticalSpace(),
-                                  (product['quantity'] == 0)
-                                      ? Text(
-                                          'Out of Stock',
-                                          style: getTextTheme(
-                                            color: COLOR_BASE_ERROR,
-                                          ).titleMedium,
-                                        )
-                                      : Text(
-                                          'Stock: ${product['quantity']}',
-                                          style: getTextTheme().titleMedium,
-                                        ),
                                 ],
                               ),
                               addHorizontalSpace(20),
@@ -125,6 +122,12 @@ class _ProductListPageState extends State<ProductListPage> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    Text(
+                                      product['name'],
+                                      softWrap: true,
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                     Row(
                                       children: [
                                         Text(
@@ -138,6 +141,27 @@ class _ProductListPageState extends State<ProductListPage> {
                                     Row(
                                       children: [
                                         Text(
+                                          'Buying price',
+                                          style: getTextTheme().titleSmall,
+                                        ),
+                                        addHorizontalSpace(),
+                                        Text('₹${product['buying_price']}'),
+                                      ],
+                                    ),
+
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Bank Settlement',
+                                          style: getTextTheme().titleSmall,
+                                        ),
+                                        addHorizontalSpace(),
+                                        Text('₹${product['bank_settlement']}'),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
                                           'SKU Id:',
                                           style: getTextTheme().titleSmall,
                                         ),
@@ -145,60 +169,39 @@ class _ProductListPageState extends State<ProductListPage> {
                                         Row(
                                           children: [
                                             Text('${product['sku_id']}'),
-                                            addHorizontalSpace(),
-                                            InkWell(
-                                              onTap: (){
-                                                addSKU(product['id']);
-                                              },
-                                              child: Icon(Icons.add , color: COLOR_PRIMARY,))
+                                            
+                                            
                                           ],
                                         ),
                                       ],
                                     ),
 
-                                    Text(
-                                      product['name'],
-                                      softWrap: true,
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-
                                     Row(
                                       children: [
-                                        SizedBox(
-                                          width: 100,
-                                          height: 40,
-                                          child: TextField(
-                                            controller: _controller,
-                                            decoration: InputDecoration(
-                                              hintText: 'Count',
-                                            ),
-                                          ),
-                                          // FloatingLabelEditBox(
-                                          //   labelText: 'count',
-                                          //   controller: _controller,
-                                          // ),
+                                        Text(
+                                          'SKU Name:',
+                                          style: getTextTheme().titleSmall,
                                         ),
-
                                         addHorizontalSpace(),
-
-                                        InkWell(
-                                          onTap: () {
-                                            updateStocks(
-                                              product['id'],
-                                              int.parse(_controller.text),
-                                            );
-                                          },
-                                          child: Badge(
-                                            padding: CONTENT_PADDING,
-                                            label: Icon(
-                                              Icons.check,
-                                              color: COLOR_BASE,
+                                        Row(
+                                          children: [
+                                            Text('${product['sku_name']}'),
+                                            addHorizontalSpace(),
+                                            InkWell(
+                                              onTap: () {
+                                                addSKU(product);
+                                              },
+                                              child: Container(
+                                                color: COLOR_BASE,
+                                                child: Icon(
+                                                  Icons.add,
+                                                  size: 36,
+                                                  color: COLOR_PRIMARY,
+                                                ),
+                                              ),
                                             ),
-                                          ),
+                                          ],
                                         ),
-
-                                        addHorizontalSpace(),
                                       ],
                                     ),
                                   ],
@@ -213,22 +216,15 @@ class _ProductListPageState extends State<ProductListPage> {
                       ),
                     );
                   }).toList(),
-                ),
-              ],
-            )
-          : Row(
+                ): Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ProgressCircular(
-                    width: 32,
-                    height: 32,
-                    color: COLOR_BLACK,
-                  ),
-                ),
+                ProgressCircular(width: 32, height: 32, color: COLOR_BLACK),
               ],
             ),
+              ],
+            )
+          
     );
   }
 
@@ -254,9 +250,26 @@ class _ProductListPageState extends State<ProductListPage> {
       });
     }
   }
-  
-  addSKU(product_id) {
 
-     Navigator.push(context, MaterialPageRoute(builder: (builder)=> AddSkuPage(product_id: product_id,)));
+  addSKU(product) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (builder) => AddSkuPage(
+          product_id: product['id'],
+          product_name: product['name'],
+          product_url: product['thumbnail_url'],
+        ),
+      ),
+    );
+  }
+
+  openProductDetails(int sku_id) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (builder) => EditProduct(sku_id: sku_id),
+      ),
+    );
   }
 }

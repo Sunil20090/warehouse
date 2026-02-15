@@ -11,7 +11,7 @@ class ColoredButton extends StatefulWidget {
     this.onPressed,
     required this.child,
     this.backgroundColor = COLOR_PRIMARY,
-    this.radius = 18,
+    this.radius = 8,
   });
 
   @override
