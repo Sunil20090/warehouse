@@ -152,14 +152,18 @@ class _EditProductState extends State<EditProduct> {
                                     controller: _bankSettlement,
                                   ),
                                   addVerticalSpace(),
-                                  LoadableButton(
-                                    name: 'Update',
-                                    
-                                    isLoading: _updatingSettlement,
-                                    onClicked: () => updateBankSettlement(
-                                      _productDetails['sku_id'],
-                                      double.parse(_bankSettlement.text),
-                                    ),
+                                  Row(
+                                    children: [
+                                      LoadableButton(
+                                        name: 'Update',
+                                        
+                                        isLoading: _updatingSettlement,
+                                        onClicked: () => updateBankSettlement(
+                                          _productDetails['sku_id'],
+                                          double.parse(_bankSettlement.text),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -209,10 +213,7 @@ class _EditProductState extends State<EditProduct> {
                                 );
                               }).toList(),
 
-                            // _item(
-                            //   'Stock',
-                            //   FloatingLabelEditBox(labelText: 'Stock'),
-                            // )
+                            addVerticalSpace(200)
                           ],
                         ),
                       ),

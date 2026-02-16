@@ -6,6 +6,7 @@ import 'package:warehouse/constants/url_constant.dart';
 import 'package:warehouse/pages/cancel_orders/cancel_order_page.dart';
 import 'package:warehouse/pages/dashboard_page.dart';
 import 'package:warehouse/pages/inventory/inventory_page.dart';
+import 'package:warehouse/pages/order_list_page.dart';
 import 'package:warehouse/pages/order_shiped.dart';
 import 'package:warehouse/pages/order_status_update.dart';
 import 'package:warehouse/pages/packing_dashboard/pack_order_history_page.dart';
@@ -70,7 +71,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: (_summary != null)
           ? GridView.count(
-              crossAxisCount: 2,
+              crossAxisCount: (MediaQuery.of(context).size.width / 200).toInt() ,
               mainAxisSpacing: 8,
               crossAxisSpacing: 8,
               children: [
@@ -142,7 +143,6 @@ class _HomePageState extends State<HomePage> {
 
                 CardWithBadge(
                   name: 'Ready to dispatch',
-                  badge: '${_summary['outgoing_orders']}',
                   iconType: Icons.local_shipping_outlined,
                   iconColor: Colors.green,
                   onCardClicked: openOrderShippedPage,
@@ -186,7 +186,7 @@ class _HomePageState extends State<HomePage> {
   openPackOrders() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (builder) => PackOrderHistoryPage()),
+      MaterialPageRoute(builder: (builder) => OrderListPage(level: 2, screenName: 'Packed',)),
     );
   }
 
@@ -200,7 +200,9 @@ class _HomePageState extends State<HomePage> {
   openRegisteredOrder() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (builder) => RegisteredHistoryPage()),
+      MaterialPageRoute(
+        builder: (builder) => OrderListPage(level: 1, screenName: 'Label Generated'),
+      ),
     );
   }
 
@@ -228,14 +230,14 @@ class _HomePageState extends State<HomePage> {
   openReturnOrderPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (builder) => ReturnOrderPage()),
+      MaterialPageRoute(builder: (builder) => OrderListPage(level: 5, screenName: 'Return',)),
     );
   }
 
   openCancelOrderPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (builder) => CancelOrderPage()),
+      MaterialPageRoute(builder: (builder) => OrderListPage(level: 4, screenName: 'Cancel',)),
     );
   }
 

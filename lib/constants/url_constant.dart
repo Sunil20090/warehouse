@@ -41,6 +41,8 @@ const URL_ADD_ITEM = '$_domain${_baseUrl}addItem';
 
 const URL_GET_PLATFORMS =  '$_domain${_baseUrl}getPlatforms';
 
-
 const URL_GET_ITEM_WISE_SUMMARY = '$_domain${_baseUrl}getItemWiseSummary';
 const URL_UPDATE_BANK_SETTLEMENT = '$_domain${_baseUrl}updateBankSettlement';
+const URL_ORDER_LIST_AT_STAGE = '$_domain${_baseUrl}getOrderListAtStage';
+
+

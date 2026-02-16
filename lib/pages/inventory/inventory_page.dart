@@ -22,8 +22,7 @@ class _InventoryPageState extends State<InventoryPage> {
   String _currentFilter = "";
 
   var items;
-
-  double totalCost = 0;
+  double _totalCost = 0.0;
 
   @override
   void initState() {
@@ -46,10 +45,12 @@ class _InventoryPageState extends State<InventoryPage> {
 
     if (response.isSuccess) {
       setState(() {
-        items = response.body as List;
-        totalCost = (items as List)
-            .map((el) => items['cost'])
-            .reduce((value, element) => value + element);
+        items = response.body;
+        _totalCost = items
+            .map((el) => double.parse(el['cost']) * el['available_count'])
+            .reduce((value, element) => element + value);
+
+        // .reduce((value, element) => value + element);
       });
     }
   }
@@ -89,7 +90,15 @@ class _InventoryPageState extends State<InventoryPage> {
                   color: COLOR_BASE,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [Text('Total Cost: '), Text('$totalCost', style: getTextTheme(color: COLOR_PRIMARY).headlineMedium,)],
+                    children: [
+                      Text('Total Cost: '),
+                      Text(
+                        _totalCost.toStringAsFixed(2),
+                        style: getTextTheme(
+                          color: COLOR_PRIMARY,
+                        ).headlineMedium,
+                      ),
+                    ],
                   ),
                 ),
               ),

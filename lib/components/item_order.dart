@@ -143,14 +143,20 @@ class _ItemOrderState extends State<ItemOrder> {
                     onClicked: () => getPdf('label'),
                   ),
 
-                Badge(
-                  backgroundColor: COLOR_BASE_SUCCESS,
-                  padding: CONTENT_PADDING,
-                  label: Text(
-                    widget.order['stage_name'],
-                    style: getTextTheme(color: COLOR_BASE).bodyMedium,
+                  Container(
+                    padding: CONTENT_PADDING,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(width: 0.1),
+                      color: const Color.fromARGB(255, 2, 62, 141),
+                    ),
+                    height: 40,
+                    child: Text(
+                    widget.order['stage_name'].toString().toUpperCase(),
+                    style: getTextTheme(color: COLOR_BASE).titleMedium,
+                  ) ,
                   ),
-                ),
 
                 const Divider(height: 24),
               ],

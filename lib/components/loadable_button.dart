@@ -33,7 +33,7 @@ class _LoadableButtonState extends State<LoadableButton> {
         padding: CONTENT_PADDING,
         margin: CONTENT_PADDING,
         decoration: BoxDecoration(
-          color: widget.backgroundColor,
+          color: !widget.isLoading ? widget.backgroundColor : const Color.fromARGB(255, 52, 39, 236),
           borderRadius: BorderRadius.circular(12)
         ),
         child: Row(

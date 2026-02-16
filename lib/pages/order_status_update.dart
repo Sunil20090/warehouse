@@ -38,10 +38,14 @@ class _OrderStatusUpdateState extends State<OrderStatusUpdate> {
           addVerticalSpace(40),
 
           if (_csvBytes != null)
-            LoadableButton(
-              name: 'Upload CSV',
-              isLoading: _isLoading,
-              onClicked: updateStatusBy,
+            Row(
+              children: [
+                LoadableButton(
+                  name: 'Upload CSV',
+                  isLoading: _isLoading,
+                  onClicked: updateStatusBy,
+                ),
+              ],
             ),
         ],
       ),
