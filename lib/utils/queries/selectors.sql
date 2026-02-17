@@ -65,10 +65,6 @@ select * from warehouse_items_in_product;
 select * from warehouse_platforms;
 
 
-
-
-
-
 select * from warehouse_stages_of_orders where order_id = 4;
 
 delete from warehouse_stages_of_orders where order_id = 317 and stage_id = 2;

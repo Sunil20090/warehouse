@@ -78,7 +78,7 @@ String formatNumber(num number) {
 String standardDate(
   String isoTimestamp, {
   Duration timezoneOffset = const Duration(hours: 5, minutes: 30),
-  String format = ' hh:mm a yyyy MMM dd'
+  String format = 'EEE hh:mm a yyyy MMM dd'
 }) {
   DateTime dateTime = DateTime.parse(isoTimestamp);
   dateTime = dateTime.add(timezoneOffset);

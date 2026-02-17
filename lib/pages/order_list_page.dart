@@ -118,15 +118,8 @@ class _OrderListPageState extends State<OrderListPage> {
               // addVerticalSpace(),
               Expanded(
                 flex: 6,
-                child:GridView.builder(
-
+                child:ListView.builder(
                   itemCount: _flitered_order.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: (MediaQuery.of(context).size.width / 480).toInt(), // number of columns
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 0.8, // adjust height/width ratio
-                  ),
                   itemBuilder: (context, index) {
                     final order = _flitered_order[index];
                     return Column(

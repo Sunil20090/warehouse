@@ -3,19 +3,15 @@ import 'package:warehouse/components/project_components/card_with_badge.dart';
 import 'package:warehouse/components/progress_circular.dart';
 import 'package:warehouse/constants/theme_constant.dart';
 import 'package:warehouse/constants/url_constant.dart';
-import 'package:warehouse/pages/cancel_orders/cancel_order_page.dart';
+import 'package:warehouse/pages/add_invoice_page.dart';
 import 'package:warehouse/pages/dashboard_page.dart';
 import 'package:warehouse/pages/inventory/inventory_page.dart';
 import 'package:warehouse/pages/order_list_page.dart';
 import 'package:warehouse/pages/order_shiped.dart';
 import 'package:warehouse/pages/order_status_update.dart';
-import 'package:warehouse/pages/packing_dashboard/pack_order_history_page.dart';
 import 'package:warehouse/pages/packing_dashboard/pack_orders_page.dart';
 import 'package:warehouse/pages/print_page.dart';
 import 'package:warehouse/pages/products/product_list_page.dart';
-import 'package:warehouse/pages/registration_dashboard/add_invoice_page.dart';
-import 'package:warehouse/pages/registration_dashboard/registered_history_page.dart';
-import 'package:warehouse/pages/return_orders/return_order_page.dart';
 import 'package:warehouse/pages/search_orders.dart';
 import 'package:warehouse/utils/api_service.dart';
 import 'package:warehouse/utils/common_function.dart';
@@ -134,6 +130,13 @@ class _HomePageState extends State<HomePage> {
                   iconColor: Colors.pink,
                 ),
 
+                 CardWithBadge(
+                  name: 'Update Status',
+                  onCardClicked: openStatusUpdatePage,
+                  iconType: Icons.file_present,
+                  iconColor: COLOR_SECONDARY,
+                ),
+
                 CardWithBadge(
                   name: 'Scan and Pack',
                   onCardClicked: scanAndPack,
@@ -147,15 +150,6 @@ class _HomePageState extends State<HomePage> {
                   iconColor: Colors.green,
                   onCardClicked: openOrderShippedPage,
                 ),
-
-                CardWithBadge(
-                  name: 'Returned Orders',
-                  onCardClicked: openReturnOrderPage,
-                  badge: '${_summary['return_orders']}',
-                  iconColor: const Color.fromARGB(255, 1, 85, 134),
-                  iconType: Icons.assignment_return_outlined,
-                ),
-
                 CardWithBadge(
                   name: 'Cancel Orders',
                   onCardClicked: openCancelOrderPage,
@@ -163,13 +157,21 @@ class _HomePageState extends State<HomePage> {
                   iconType: Icons.highlight_off,
                   iconColor: const Color.fromARGB(255, 236, 8, 8),
                 ),
-
                 CardWithBadge(
-                  name: 'Update Status',
-                  onCardClicked: openStatusUpdatePage,
-                  iconType: Icons.file_present,
-                  iconColor: COLOR_SECONDARY,
+                  name: 'Returned Orders',
+                  onCardClicked: openReturnOrderPage,
+                  badge: '${_summary['return_orders']}',
+                  iconColor: const Color.fromARGB(255, 1, 85, 134),
+                  iconType: Icons.assignment_return_outlined,
                 ),
+CardWithBadge(
+                  name: 'Used Orders',
+                  onCardClicked: openUsedOrderPage,
+                  badge: '${_summary['return_orders']}',
+                  iconColor: const Color.fromARGB(255, 139, 79, 0),
+                  iconType: Icons.check_box,
+                ),
+               
               ],
             )
           : Container(),
@@ -238,6 +240,15 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (builder) => OrderListPage(level: 4, screenName: 'Cancel',)),
+    );
+  }
+
+  openUsedOrderPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (builder) => OrderListPage(level: 6, screenName: 'Used'),
+      ),
     );
   }
 

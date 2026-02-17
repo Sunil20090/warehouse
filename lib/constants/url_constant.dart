@@ -36,13 +36,11 @@ const URL_READY_FOR_SHIPPING_SUMMARY =
     '$_domain${_baseUrl}readyForShippingSummary';
 const URL_GET_PRINTABLE_LABLES = '$_domain${_baseUrl}getPrintableLabels';
 
-
 const URL_ADD_ITEM = '$_domain${_baseUrl}addItem';
 
-const URL_GET_PLATFORMS =  '$_domain${_baseUrl}getPlatforms';
+const URL_GET_PLATFORMS = '$_domain${_baseUrl}getPlatforms';
 
 const URL_GET_ITEM_WISE_SUMMARY = '$_domain${_baseUrl}getItemWiseSummary';
 const URL_UPDATE_BANK_SETTLEMENT = '$_domain${_baseUrl}updateBankSettlement';
 const URL_ORDER_LIST_AT_STAGE = '$_domain${_baseUrl}getOrderListAtStage';
-
-
+const URL_ORDER_DEEP_DETAILS = '$_domain${_baseUrl}orderDeepDetails';
