@@ -24,8 +24,9 @@ const URL_SEARCH_ORDER = '$_domain${_baseUrl}searchOrders';
 const URL_UPDATE_ACTUAL_STATUS_OF_ORDERS =
     '$_domain${_baseUrl}updateStatusOfOrder';
 
-// const URL_MARK_DISPATCH = '$_domain${_baseUrl}markDispatch';
-// const URL_SHIPPED_ORDERS = '$_domain${_baseUrl}shippedOrders';
+const URL_UPDATE_ACTUAL_PAYMENTS =
+    '$_domain${_baseUrl}updatePayments';
+
 
 const URL_PACK_ORDER = '$_domain${_baseUrl}packOrder';
 const URL_DASHBOARD = '$_domain${_baseUrl}dashboard';
@@ -44,3 +45,4 @@ const URL_GET_ITEM_WISE_SUMMARY = '$_domain${_baseUrl}getItemWiseSummary';
 const URL_UPDATE_BANK_SETTLEMENT = '$_domain${_baseUrl}updateBankSettlement';
 const URL_ORDER_LIST_AT_STAGE = '$_domain${_baseUrl}getOrderListAtStage';
 const URL_ORDER_DEEP_DETAILS = '$_domain${_baseUrl}orderDeepDetails';
+const URL_ACTUAL_PROFIT = '$_domain${_baseUrl}actualProfit';

@@ -65,6 +65,50 @@ select * from warehouse_items_in_product;
 select * from warehouse_platforms;
 
 
+
+SELECT 
+    COUNT(CASE WHEN wpo.actual_bank_settlement IS NOT NULL THEN 1 END) AS updated,
+    COUNT(CASE WHEN wpo.actual_bank_settlement IS NULL THEN 1 END) AS not_updated,
+    COUNT(CASE WHEN wpo.actual_bank_settlement IS NOT NULL THEN 1 END) /  COUNT(wpo.id) * 100 as update_percent,
+    COUNT(wpo.id) AS total
+FROM warehouse_products_orders wpo 
+
+LEFT JOIN (
+    SELECT order_id, updated_on, status FROM warehouse_actual_status
+) as wast ON wast.order_id = wpo.id
+
+where wast.status = 'DELIVERED' and  wpo.actual_bank_settlement IS NOT NULL;
+
+
+SELECT  
+    COUNT(CASE WHEN wpo.actual_bank_settlement > 0 THEN 1 END) AS delivered,
+    COUNT(CASE WHEN wpo.actual_bank_settlement = 0 THEN 1 END) AS canceled,
+    COUNT(CASE WHEN wpo.actual_bank_settlement < 0 THEN 1 END) AS returned,
+    COUNT(id) AS total,
+    SUM(CASE WHEN wpo.actual_bank_settlement > 0 THEN (wpo.actual_bank_settlement - wpo.buying_price - wpo.gst_price - 9) ELSE wpo.actual_bank_settlement - 9  END) as profit
+FROM warehouse_products_orders wpo 
+
+LEFT JOIN (
+    SELECT order_id, updated_on, status FROM warehouse_actual_status
+) as wast ON wast.order_id = wpo.id
+
+where wpo.created_on like '{filter_type.replace('Date ', '')}%' and wpo.actual_bank_settlement IS NOT NULL;
+
+
+
+select 
+    wpo.order_number, 
+    wpo.tracking_id, 
+    wpo.actual_bank_settlement,
+    wast.status
+from warehouse_products_orders wpo 
+
+LEFT JOIN (
+    SELECT order_id, updated_on, status FROM warehouse_actual_status
+) as wast ON wast.order_id = wpo.id
+
+where wast.status = 'CANCELLED';
+
 select * from warehouse_stages_of_orders where order_id = 4;
 
 delete from warehouse_stages_of_orders where order_id = 317 and stage_id = 2;

@@ -83,7 +83,6 @@ class _SummaryOrderPageState extends State<SummaryOrderPage> {
                       child: ListView.separated(
                         padding: const EdgeInsets.all(12),
                         itemCount: _summary.length,
-                        
                         separatorBuilder: (_, __) => const SizedBox(height: 8),
                         itemBuilder: (context, index) {
                           final item = _summary[index];
@@ -129,15 +128,6 @@ class _SummaryOrderPageState extends State<SummaryOrderPage> {
                                   ],
                                 ),
 
-                                // ClipRRect(
-                                //   borderRadius: BorderRadius.circular(8),
-                                //   child: Image.network(
-                                //     item['thumbnail_url'],
-                                //     width: 60,
-                                //     height: 60,
-                                //     fit: BoxFit.cover,
-                                //   ),
-                                // ),
                                 const SizedBox(width: 12),
 
                                 /// Product Info

@@ -145,9 +145,9 @@ Future<ApiResponse> postBytesService(
       ? jsonDecode(response.body)
       : response.body;
 
-  // print(
-  //   'Status Code: ${response.statusCode} \nURL: $url \n Payload: binary\n  \n Response Body:\n \t${formatJson(reponseBody)}',
-  // );
+  print(
+    'Status Code: ${response.statusCode} \nURL: $url \n Payload: binary\n  \n Response Body:\n \t${formatJson(reponseBody)}',
+  );
 
   return ApiResponse(
     isSuccess: response.statusCode == 200,

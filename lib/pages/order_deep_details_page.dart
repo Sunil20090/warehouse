@@ -178,38 +178,61 @@ class _OrderDeepDetailsPageState extends State<OrderDeepDetailsPage> {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            _priceRow("Price", order['price']),
-                            _priceRow("Buying Price", order['buying_price']),
-                            _priceRow("GST Price", order['gst_price']),
-                            _priceRow("Packaging", order['packaging_cost']),
+                            // _priceRow("Price", '₹${order['price']}', ),
                             _priceRow(
-                              "Returns(%)",
-                              order['return_percentage'],
-                              postFix: '%',
-                              prefix: '',
+                              "Buying Price",
+                              '₹${order['buying_price']}',
+                            ),
+                            _priceRow("GST Price (18%)", '₹${order['gst_price']}'),
+                            _priceRow(
+                              "Packaging",
+                              '₹${order['packaging_cost']}',
                             ),
                             _priceRow(
                               "Quantity",
                               order['quantity'],
-                              prefix: '',
+                              color: COLOR_BLACK,
                             ),
                             Divider(),
 
-                            _priceRow(
-                              "Bank Settlement",
-                              (double.parse(order['current_bank_settlement']) *
-                                  order['quantity']).toStringAsFixed(2),
-                            ),
-                            _priceRow(
-                              "Total Expense",
-                              calculateTotal(order).toStringAsFixed(2),
-                              prefix: '-₹',
-                            ),
+                            (order['actual_bank_settlement'] == null)
+                                ? _priceRow(
+                                    'Assumed Bank Settlement',
+                                    '${order['current_bank_settlement']}',
+                                    color: COLOR_BASE_SUCCESS,
+                                  )
+                                : _priceRow(
+                                    'Actual Bank Settlement',
+
+                                    order['actual_bank_settlement'] >= 0
+                                        ? '₹${order['actual_bank_settlement']}'
+                                        : '-₹${order['actual_bank_settlement'].abs().toStringAsFixed(2)}',
+                                    color: COLOR_BASE_SUCCESS,
+                                  ),
+
+                            _priceRow("Total Expence", '-₹${order['expence']}'),
+
                             Divider(),
-                            _priceRow(
-                              "Profit",
-                              calculateProfit(order).toStringAsFixed(2),
-                            ),
+
+                            (order['actual_profit'] == null)
+                                ? _priceRow(
+                                    "Assumed Profit",
+                                    order['profit'] >= 0
+                                        ? '₹${order['profit'].abs().toStringAsFixed(2)}'
+                                        : '-₹${order['profit'].abs().toStringAsFixed(2)}',
+                                    color: order['actual_profit'] >= 0
+                                        ? COLOR_BASE_SUCCESS
+                                        : COLOR_RED,
+                                  )
+                                : _priceRow(
+                                    "Actual Profit",
+                                    order['actual_profit'] >= 0
+                                        ? '₹${order['actual_profit'].abs().toStringAsFixed(2)}'
+                                        : '-₹${order['actual_profit'].abs().toStringAsFixed(2)}',
+                                    color: order['actual_profit'] >= 0
+                                        ? COLOR_BASE_SUCCESS
+                                        : COLOR_RED,
+                                  ),
                           ],
                         ),
                       ),
@@ -243,30 +266,16 @@ class _OrderDeepDetailsPageState extends State<OrderDeepDetailsPage> {
     );
   }
 
-  Widget _priceRow(String title, dynamic value, {prefix = '₹', postFix = ''}) {
+  Widget _priceRow(String title, dynamic value, {color = COLOR_RED}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [Text(title), Text("$prefix${value.toString()}$postFix")],
+        children: [
+          Text(title, style: getTextTheme(color: color).titleSmall),
+          Text("$value", style: getTextTheme(color: color).bodySmall),
+        ],
       ),
     );
-  }
-
-  double calculateTotal(order) {
-    double total =
-        (double.parse(order['buying_price']) * order['quantity'] +
-            order['gst_price']) +
-        (order['return_percentage'] / 100) *
-            (double.parse(order['buying_price']) + order['gst_price']);
-
-    return total;
-  }
-
-  double calculateProfit(order) {
-    double total = calculateTotal(order);
-
-    return -total +
-        double.parse(order['current_bank_settlement']) * order['quantity'];
   }
 }

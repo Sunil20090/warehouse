@@ -4,6 +4,7 @@ import 'package:warehouse/components/progress_circular.dart';
 import 'package:warehouse/constants/theme_constant.dart';
 import 'package:warehouse/constants/url_constant.dart';
 import 'package:warehouse/pages/add_invoice_page.dart';
+import 'package:warehouse/pages/add_orders_payments.dart';
 import 'package:warehouse/pages/dashboard_page.dart';
 import 'package:warehouse/pages/inventory/inventory_page.dart';
 import 'package:warehouse/pages/order_list_page.dart';
@@ -137,6 +138,13 @@ class _HomePageState extends State<HomePage> {
                   iconColor: COLOR_SECONDARY,
                 ),
 
+                 CardWithBadge(
+                  name: 'Update Payments',
+                  onCardClicked: openPaymentScreen,
+                  iconType: Icons.money_outlined,
+                  iconColor: const Color.fromARGB(255, 73, 94, 0),
+                ),
+
                 CardWithBadge(
                   name: 'Scan and Pack',
                   onCardClicked: scanAndPack,
@@ -164,7 +172,7 @@ class _HomePageState extends State<HomePage> {
                   iconColor: const Color.fromARGB(255, 1, 85, 134),
                   iconType: Icons.assignment_return_outlined,
                 ),
-CardWithBadge(
+                CardWithBadge(
                   name: 'Used Orders',
                   onCardClicked: openUsedOrderPage,
                   badge: '${_summary['return_orders']}',
@@ -277,6 +285,13 @@ CardWithBadge(
     Navigator.push(
       context,
       MaterialPageRoute(builder: (builder) => InventoryPage()),
+    );
+  }
+
+  openPaymentScreen(){
+     Navigator.push(
+      context,
+      MaterialPageRoute(builder: (builder) => AddOrdersPayments()),
     );
   }
 }

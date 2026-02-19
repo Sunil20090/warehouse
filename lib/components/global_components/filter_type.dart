@@ -27,6 +27,7 @@ class _FilterTypeState extends State<FilterType> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           spacing: 4,
           children: [
             ...widget.filters.map((filter) {

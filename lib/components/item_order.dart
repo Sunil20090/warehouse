@@ -104,6 +104,7 @@ class _ItemOrderState extends State<ItemOrder> {
                         _infoRow("Order ID", widget.order['order_number']),
                         _infoRow("Tracking ID", widget.order['tracking_id']),
                         _infoRow("SKU", widget.order['sku_name']),
+                        _infoRow("Actual Bank Settlement", '${widget.order['actual_bank_settlement']}'),
                         _infoRow(
                           "Delivery prtr",
                           '${widget.order['delivery_partener']}'

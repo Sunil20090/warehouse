@@ -19,7 +19,7 @@ const COLOR_SECONDARY = Color.fromARGB(255, 235, 0, 156);
 const COLOR_BASE = Color.fromARGB(255, 229, 217, 241);
 const COLOR_BASE_DARKER = Color.fromARGB(255, 161, 160, 160);
 
-const COLOR_BASE_SUCCESS = Color.fromARGB(255, 0, 181, 90);
+const COLOR_BASE_SUCCESS = Color.fromARGB(255, 0, 87, 44);
 const COLOR_BASE_ERROR = Color.fromARGB(255, 136, 0, 0);
 const COLOR_RED = Color.fromARGB(255, 139, 2, 2);
 
