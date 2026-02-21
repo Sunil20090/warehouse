@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:warehouse/components/global_components/choose_file.dart';
 import 'package:warehouse/components/loadable_button.dart';
+import 'package:warehouse/components/progress_circular.dart';
 import 'package:warehouse/components/project_components/filters_by_url.dart';
 import 'package:warehouse/components/screen_action_bar.dart';
 import 'package:warehouse/components/screen_frame.dart';
@@ -21,7 +22,7 @@ class AddOrdersPayments extends StatefulWidget {
 class _AddOrdersPaymentsState extends State<AddOrdersPayments> {
   Uint8List? _csvBytes;
 
-  bool _isLoading = false;
+  bool _isLoading = false, _gettingProfit = false;
 
   String _currentFilterValue = "";
 
@@ -37,14 +38,21 @@ class _AddOrdersPaymentsState extends State<AddOrdersPayments> {
   initProfit() async {
     var body = {"filter_type": _currentFilterValue};
 
+    setState(() {
+      _gettingProfit = true;
+    });
+
     ApiResponse response = await postService(URL_ACTUAL_PROFIT, body);
+
+    setState(() {
+      _gettingProfit = false;
+    });
 
     if (response.isSuccess) {
       setState(() {
-        if(response.body['profit'] != null){
+        if (response.body['profit'] != null) {
           _summary = response.body;
         }
-        
       });
     }
   }
@@ -78,66 +86,97 @@ class _AddOrdersPaymentsState extends State<AddOrdersPayments> {
           addVerticalSpace(40),
           Divider(),
 
-          if (_summary != null) Container(
-            padding: CONTENT_PADDING,
-            child: Column(
-              children: [
-                FiltersByUrl(
-                  filterFor: "payment",
-                  onClicked: (value) {
-                    _currentFilterValue = value;
-                    initProfit();
-                  },
-                ),
-
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    spacing: 8,
+         
+             Container(
+                  padding: CONTENT_PADDING,
+                  child: Column(
                     children: [
-                      _buildCard(
-                        "Pending",
-                        _summary['not_updated'],
-                        Icons.pending,
-                        Colors.red,
+                      FiltersByUrl(
+                        filterFor: "payment",
+                        onClicked: (value) {
+                          _currentFilterValue = value;
+                          initProfit();
+                        },
                       ),
 
-                      _buildCard(
-                          "Total Orders",
-                          _summary['total'],
-                          Icons.inventory_2,
-                          Colors.blue,
+                       (!_gettingProfit)
+                       ? SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          spacing: 8,
+                          children: [
+                            _buildCard(
+                              "Not Updated",
+                              _summary['not_updated'],
+                              Icons.pending,
+                              Colors.red,
+                            ),
+
+                            _buildCard(
+                              "Total Orders",
+                              _summary['total'],
+                              Icons.inventory_2,
+                              Colors.blue,
+                            ),
+                            _buildCard(
+                              "Delivered",
+                              _summary['delivered'],
+                              Icons.check_circle,
+                              Colors.green,
+                            ),
+                            _buildCard(
+                              "Canceled",
+                              _summary['canceled'],
+                              Icons.cancel,
+                              Colors.red,
+                            ),
+                            _buildCard(
+                              "Returned",
+                              _summary['returned'],
+                              Icons.undo,
+                              Colors.orange,
+                            ),
+
+                            _buildCard(
+                              "Returned Cost",
+                              _summary['return_cost'],
+                              Icons.undo,
+                              Colors.orange,
+                            ),
+
+                            _buildCard(
+                              "Margin Profit",
+                              (_summary['profit'] -
+                                      double.parse(_summary['return_cost']))
+                                  .toStringAsFixed(2),
+                              Icons.wallet_membership,
+                              (_summary['profit'] -
+                                          double.parse(
+                                            _summary['return_cost'],
+                                          )) >=
+                                      0
+                                  ? Colors.green
+                                  : Colors.red,
+                            ),
+                            _buildCard(
+                              "Net Profit",
+                              (_summary['profit']).toStringAsFixed(2),
+                              Icons.wallet_membership,
+                              _summary['profit'] >= 0
+                                  ? Colors.green
+                                  : Colors.red,
+                            ),
+                            
+                          ],
                         ),
-                      _buildCard(
-                        "Delivered",
-                        _summary['delivered'],
-                        Icons.check_circle,
-                        Colors.green,
-                      ),
-                      _buildCard(
-                        "Canceled",
-                        _summary['canceled'],
-                        Icons.cancel,
-                        Colors.red,
-                      ),
-                      _buildCard(
-                        "Returned",
-                        _summary['returned'],
-                        Icons.undo,
-                        Colors.orange,
-                      ),
-                      _buildCard(
-                        "Profit",
-                        (_summary['profit']).toStringAsFixed(2),
-                        Icons.wallet_membership,
-                        _summary['profit'] >= 0 ? Colors.green : Colors.red,
-                      ),
+                      ): Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [ProgressCircular()],
+                ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ),
+                )
+              
         ],
       ),
     );
@@ -161,6 +200,7 @@ class _AddOrdersPaymentsState extends State<AddOrdersPayments> {
     if (response.isSuccess) {
       if (response.body['status'] == "OK") {
         showAlert(context, response.body['heading'], response.body['message']);
+        initProfit();
       }
     } else {
       showApiError(context);

@@ -122,9 +122,10 @@ insertScreen(
 
 Future<ApiResponse> postBytesService(
   String url,
-  Uint8List bytes, [
-  String fileName = 'sample',
-]) async {
+  Uint8List bytes, {
+  Map<String, dynamic>? jsonBody,
+}) async {
+  String fileName = 'sample';
   var uri = Uri.parse(url);
 
   var request = http.MultipartRequest("POST", uri);
@@ -136,6 +137,8 @@ Future<ApiResponse> postBytesService(
       filename: fileName,
     ),
   );
+
+  request.fields['data'] = jsonEncode(jsonBody);
 
   var responseStream = await request.send();
 

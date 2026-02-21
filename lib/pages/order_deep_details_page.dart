@@ -220,7 +220,7 @@ class _OrderDeepDetailsPageState extends State<OrderDeepDetailsPage> {
                                     order['profit'] >= 0
                                         ? '₹${order['profit'].abs().toStringAsFixed(2)}'
                                         : '-₹${order['profit'].abs().toStringAsFixed(2)}',
-                                    color: order['actual_profit'] >= 0
+                                    color: order['profit'] >= 0
                                         ? COLOR_BASE_SUCCESS
                                         : COLOR_RED,
                                   )

@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:warehouse/components/global_components/choose_image.dart';
 import 'package:warehouse/components/global_components/floating_label_edit_box.dart';
@@ -19,13 +18,13 @@ class AddItem extends StatefulWidget {
 }
 
 class _AddItemState extends State<AddItem> {
-  File? _file;
-
   bool _loading = false;
 
   TextEditingController _nameController = TextEditingController();
   TextEditingController _availableCountController = TextEditingController();
   TextEditingController _costController = TextEditingController();
+
+  Uint8List? _imageBytes;
 
   @override
   void dispose() {
@@ -59,8 +58,8 @@ class _AddItemState extends State<AddItem> {
               addVerticalSpace(DEFAULT_LARGE_SPACE),
               (widget.itemObj == null)
                   ? ChooseImage(
-                      onFileSelected: (file) {
-                        _file = file;
+                      onBytesRead: (bytesRecieved) {
+                        _imageBytes = bytesRecieved;
                       },
                     )
                   : RoundedRectImage(
@@ -87,11 +86,17 @@ class _AddItemState extends State<AddItem> {
               ),
               addVerticalSpace(),
 
-              LoadableButton(
-                name: 'Add or Update',
-                isLoading: _loading,
-                onClicked: addOrUpdateItem,
-              ),
+              (widget.itemObj == null)
+                  ? LoadableButton(
+                      name: 'Add',
+                      isLoading: _loading,
+                      onClicked: addItem,
+                    )
+                  : LoadableButton(
+                      name: 'Update',
+                      isLoading: _loading,
+                      onClicked: updateItem,
+                    ),
             ],
           ),
         ),
@@ -99,22 +104,45 @@ class _AddItemState extends State<AddItem> {
     );
   }
 
-  addOrUpdateItem() async {
-  
+  addItem() async {
     var body = {
       "name": _nameController.text,
       "available_count": int.parse(_availableCountController.text),
       "cost": double.parse(_costController.text),
-      "image_base64": (_file != null) ? await fileToBase64(_file!) : null,
-      "purpose": widget.itemObj == null ? 'add' : 'update',
-      "item_id": widget.itemObj != null ? widget.itemObj['id'] : 0,
     };
 
     setState(() {
       _loading = true;
     });
 
-    ApiResponse response = await postService(URL_ADD_ITEM, body);
+    ApiResponse response = await postBytesService(
+      URL_ADD_ITEM,
+      _imageBytes!,
+      jsonBody: body,
+    );
+
+    setState(() {
+      _loading = false;
+    });
+
+    if (response.isSuccess) {
+      Navigator.pop(context, true);
+    }
+  }
+
+  updateItem() async {
+    var body = {
+      "name": _nameController.text,
+      "available_count": int.parse(_availableCountController.text),
+      "cost": double.parse(_costController.text),
+      "item_id": widget.itemObj['id'],
+    };
+
+    setState(() {
+      _loading = true;
+    });
+
+    ApiResponse response = await postService(URL_UPDATE_ITEM, body);
 
     setState(() {
       _loading = false;

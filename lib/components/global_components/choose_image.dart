@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:warehouse/components/colored_button.dart';
@@ -8,15 +10,16 @@ import 'package:warehouse/constants/theme_constant.dart';
 import 'package:warehouse/utils/common_function.dart';
 
 class ChooseImage extends StatefulWidget {
-  Function(File imageFile) onFileSelected;
-  ChooseImage({super.key, required this.onFileSelected});
+  // Function(File imageFile) onFileSelected;
+  Function(Uint8List bytesRecieved)? onBytesRead;
+  ChooseImage({super.key, this.onBytesRead});
 
   @override
   State<ChooseImage> createState() => _ChooseImageState();
 }
 
 class _ChooseImageState extends State<ChooseImage> {
-  File? _imageFile;
+  Uint8List? _imageBytes;
 
   @override
   void initState() {
@@ -26,7 +29,6 @@ class _ChooseImageState extends State<ChooseImage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -36,43 +38,67 @@ class _ChooseImageState extends State<ChooseImage> {
           addVerticalSpace(),
           Row(
             children: [
-              (_imageFile == null)
+              (_imageBytes == null)
                   ? Image.asset(
                       IMAGE_VOTING_ICON,
                       width: 100,
                       height: 100,
                       fit: BoxFit.contain,
                     )
-                  : Image.file(
-                      _imageFile!,
+                  : Image.memory(
+                      _imageBytes!,
                       width: 100,
                       height: 100,
                       fit: BoxFit.contain,
                     ),
               Spacer(),
               ColoredButton(
-                child: Text('Choose', style:getTextTheme(color: COLOR_BASE).titleMedium),
+                child: Text(
+                  'Choose',
+                  style: getTextTheme(color: COLOR_BASE).titleMedium,
+                ),
                 onPressed: () {
-                  pickImage();
+                  chooseFile();
                 },
               ),
-              addHorizontalSpace()
+              addHorizontalSpace(),
             ],
           ),
-          Divider()
+          Divider(),
         ],
       ),
     );
   }
 
-  pickImage() async {
-    final file = await getLocalImage(ImageSource.gallery);
+  chooseFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'jpeg', 'png'],
+      withData: true,
+    );
 
-    if (file != null) {
-      setState(() {
-        widget.onFileSelected(file);
-        _imageFile = file;
-      });
+    if (result != null) {
+      PlatformFile file = result.files.first;
+
+      if (kIsWeb) {
+        Uint8List? bytes = file.bytes;
+          setState(() {  
+             _imageBytes = bytes;
+          });
+
+        if (bytes != null && widget.onBytesRead != null) {
+          widget.onBytesRead!(bytes);
+        }
+      } else {
+        File selectedFile = File(file.path!);
+
+        if (widget.onBytesRead != null) {
+          setState(() async {
+            _imageBytes = await selectedFile.readAsBytes();
+            widget.onBytesRead!(_imageBytes!);
+          });
+        }
+      }
     }
   }
 }

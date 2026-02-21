@@ -1,13 +1,11 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:warehouse/components/colored_button.dart';
-import 'package:warehouse/components/counter.dart';
 import 'package:warehouse/components/global_components/choose_image.dart';
 import 'package:warehouse/components/global_components/floating_label_edit_box.dart';
 import 'package:warehouse/components/loadable_button.dart';
 import 'package:warehouse/components/progress_circular.dart';
-import 'package:warehouse/components/project_components/item.dart';
 import 'package:warehouse/components/rounded_rect_image.dart';
 import 'package:warehouse/components/screen_action_bar.dart';
 import 'package:warehouse/components/screen_frame.dart';
@@ -29,11 +27,8 @@ class _AddProductState extends State<AddProduct> {
   TextEditingController _nameController = TextEditingController();
   TextEditingController _shortNameController = TextEditingController();
   TextEditingController _skuIdController = TextEditingController();
-  TextEditingController _sourceController = TextEditingController();
-  TextEditingController _priceController = TextEditingController();
   TextEditingController _bankSettlementController = TextEditingController();
 
-  File? _imageFile;
   bool _addingProduct = false;
 
   var choosenItems = [];
@@ -41,6 +36,8 @@ class _AddProductState extends State<AddProduct> {
   var platforms = [];
   var choosenPlatform;
   bool _loadingPlatform = false;
+
+  Uint8List? _imageBytes;
 
   @override
   void initState() {
@@ -86,18 +83,6 @@ class _AddProductState extends State<AddProduct> {
           FloatingLabelEditBox(
             labelText: 'SKU Name',
             controller: _skuIdController,
-          ),
-          addVerticalSpace(),
-
-          FloatingLabelEditBox(
-            labelText: 'Source',
-            controller: _sourceController,
-          ),
-          addVerticalSpace(),
-          FloatingLabelEditBox(
-            labelText: 'Buying price',
-            controller: _priceController,
-            textInputType: TextInputType.number,
           ),
           addVerticalSpace(),
 
@@ -207,8 +192,8 @@ class _AddProductState extends State<AddProduct> {
           Divider(),
 
           ChooseImage(
-            onFileSelected: (imageFile) {
-              _imageFile = imageFile;
+            onBytesRead: (bytesRecieved) {
+              _imageBytes = bytesRecieved;
             },
           ),
           addVerticalSpace(),
@@ -233,26 +218,17 @@ class _AddProductState extends State<AddProduct> {
       return;
     }
 
-    if (_priceController.text.trim().isEmpty ||
-        _bankSettlementController.text.trim().isEmpty) {
-      showAlert(context, 'Empty!', 'prices is empty');
-      return;
-    }
-
-    if (_imageFile == null) {
+    if (_imageBytes == null) {
       showAlert(context, 'Error!', 'Image not attached');
       return;
     }
-
-    String base64 = await fileToBase64(_imageFile!);
 
     var body = {
       "user_id": await getUserId(),
       "name": _nameController.text,
       "sku_name": _skuIdController.text,
       "short_name": _shortNameController.text,
-      "product_image": base64,
-      "bank_settlement" : double.parse(_bankSettlementController.text),
+      "bank_settlement": double.parse(_bankSettlementController.text),
       "platform_id": choosenPlatform['id'],
       "items": choosenItems
           .map((el) => {"id": el['id'], "quantity": el['quantity']})
@@ -263,7 +239,7 @@ class _AddProductState extends State<AddProduct> {
       _addingProduct = true;
     });
 
-    ApiResponse response = await postService(URL_ADD_PRODUCT, body);
+    ApiResponse response = await postBytesService(URL_ADD_PRODUCT, _imageBytes!, jsonBody: body);
 
     setState(() {
       _addingProduct = false;

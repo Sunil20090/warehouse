@@ -38,6 +38,7 @@ const URL_READY_FOR_SHIPPING_SUMMARY =
 const URL_GET_PRINTABLE_LABLES = '$_domain${_baseUrl}getPrintableLabels';
 
 const URL_ADD_ITEM = '$_domain${_baseUrl}addItem';
+const URL_UPDATE_ITEM = '$_domain${_baseUrl}updateItem';
 
 const URL_GET_PLATFORMS = '$_domain${_baseUrl}getPlatforms';
 
