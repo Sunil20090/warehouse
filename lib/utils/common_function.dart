@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:warehouse/components/colored_button.dart';
-import 'package:warehouse/constants/local_constant.dart';
 import 'package:warehouse/constants/theme_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -22,6 +21,17 @@ SizedBox addHorizontalSpace([double width = DEFAULT_SPACE]) {
 SizedBox addVerticalSpace([double height = DEFAULT_SPACE]) {
   return SizedBox(height: height);
 }
+
+
+bool isPortrait(BuildContext context){ 
+  return MediaQuery.of(context).size.width > MediaQuery.of(context).size.height;
+}
+
+bool isLandscape(BuildContext context){
+  return MediaQuery.of(context).size.width <= MediaQuery.of(context).size.height;
+  
+}
+
 
 showAlert(
   BuildContext context,

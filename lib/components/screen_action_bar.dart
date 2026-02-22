@@ -10,7 +10,7 @@ class ScreenActionBar extends StatelessWidget {
     super.key,
     required this.title,
     this.child,
-    this.backButtonEnabled = false,
+    this.backButtonEnabled = true,
   });
 
   @override

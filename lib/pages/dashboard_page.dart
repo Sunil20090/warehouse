@@ -61,7 +61,13 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Dashboard')),
-      body: (_dashboardData != null)
+      body: (isLandscape(context))
+      ? _portraitView() : _landscapeView()
+    );
+  }
+
+  Widget _portraitView(){
+    return (_dashboardData != null)
           ? Container(
               padding: CONTENT_PADDING,
               child: Column(
@@ -241,9 +247,179 @@ class _DashboardPageState extends State<DashboardPage> {
           : Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [ProgressCircular()],
-            ),
-    );
+            );
   }
+
+  Widget _landscapeView() {
+  return (_dashboardData != null)
+      ? Container(
+          padding: CONTENT_PADDING,
+          child: Row(
+            children: [
+
+              /// LEFT SIDE (Chart + Summary)
+              Expanded(
+                flex: 4,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    FiltersByUrl(
+                      filterFor: "dashboard",
+                      onClicked: (choosenValue) {
+                        _choosenFilterType = choosenValue;
+                        initDashboard();
+                      },
+                    ),
+
+                    addVerticalSpace(),
+
+                    Row(
+                      children: [
+                        _summaryCard(
+                          title: 'Total Profit',
+                          value: perProduct['total_profit'],
+                          isProfit: true,
+                        ),
+                        const SizedBox(width: 12),
+                        _summaryCard(
+                          title: 'Total Sales',
+                          value: perProduct['total_sale_count'],
+                          isProfit: false,
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    const Text(
+                      'Profit per Product',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    /// Chart
+                    Expanded(
+                      child: BarChart(
+                        BarChartData(
+                          borderData: FlBorderData(show: false),
+                          gridData: FlGridData(show: true),
+                          titlesData: _barTitles(products),
+                          barGroups: _barGroups(products),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    /// Chips
+                    Wrap(
+                      spacing: 6,
+                      children: datatype.map((item) {
+                        return FilterChip(
+                          selected: item == _currentDataType,
+                          label: Text(item),
+                          onSelected: (value) {
+                            setState(() {
+                              _currentDataType = item;
+                              initDashboard();
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+
+              const VerticalDivider(),
+
+              /// RIGHT SIDE (Product List)
+              Expanded(
+                flex: 3,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    Text(
+                      'Product Details ( ${products.length} )',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    Expanded(
+                      child: ListView.separated(
+                        itemCount: products.length,
+                        separatorBuilder: (_, __) => const Divider(),
+                        itemBuilder: (context, index) {
+                          final product = products[index];
+                          final profit = product['profit'];
+
+                          return ListTile(
+                            leading: Stack(
+                              children: [
+                                RoundedRectImage(
+                                  thumbnail_url: product['thumbnail_url'],
+                                  fit: BoxFit.contain,
+                                ),
+
+                                CircleAvatar(
+                                  radius: 10,
+                                  backgroundColor: profit >= 0
+                                      ? Colors.green
+                                      : Colors.red,
+                                  child: Icon(
+                                    profit >= 0
+                                        ? Icons.trending_up
+                                        : Icons.trending_down,
+                                    color: Colors.white,
+                                    size: 10,
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            title: Text(
+                              product['product_name'],
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+
+                            subtitle: Text(
+                              'Sales: ${product['sale_count']}',
+                            ),
+
+                            trailing: Text(
+                              profit >= 0
+                                  ? '₹${profit.toStringAsFixed(2)}'
+                                  : '-₹${profit.abs().toStringAsFixed(2)}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: profit >= 0
+                                    ? Colors.green
+                                    : Colors.red,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        )
+      : Center(child: ProgressCircular());
+}
 
   List<BarChartGroupData> _barGroups(List products) {
     return List.generate(products.length, (index) {
