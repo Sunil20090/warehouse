@@ -28,7 +28,6 @@ class _SummaryItemWisePageState extends State<SummaryItemWisePage> {
   @override
   void initState() {
     super.initState();
-
     _initSummary();
   }
 

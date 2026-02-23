@@ -223,15 +223,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
                                     addVerticalSpace(),
 
-                                    // Text(
-                                    //   profit >= 0
-                                    //       ? '₹${(profit / product['sale_count']).toStringAsFixed(2)}'
-                                    //       : '-₹${(profit / product['sale_count']).abs().toStringAsFixed(2)}',
-                                    //   style: TextStyle(
-                                    //     fontWeight: FontWeight.bold,
-                                    //     color: profit >= 0 ? Colors.green : Colors.red,
-                                    //   ),
-                                    // ),
                                   ],
                                 ),
                               );
